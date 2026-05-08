@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Wedding Management</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+    <style>
+
+        .page-title {
+
+            text-align: center;
+
+            margin-bottom: 30px;
+        }
+
+        .admin-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                380px 1fr;
+
+            gap: 24px;
+        }
+
+        .booking-card {
+
+            background:
+                rgba(255,255,255,0.05);
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            border-radius: 20px;
+
+            padding: 20px;
+        }
+
+        .booking-row {
+
+            padding: 18px;
+
+            border-radius: 16px;
+
+            background:
+                rgba(255,255,255,0.04);
+
+            margin-bottom: 14px;
+        }
+
+        .booking-row strong {
+
+            display: block;
+
+            font-size: 18px;
+
+            margin-bottom: 8px;
+
+            color: #f2d78c;
+        }
+
+        .booking-meta {
+
+            opacity: 0.75;
+
+            line-height: 1.7;
+
+            font-size: 14px;
+        }
+
+        .booking-status {
+
+            display: inline-block;
+
+            margin-top: 12px;
+
+            padding: 6px 12px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(46,204,113,0.16);
+
+            font-size: 12px;
+
+            font-weight: 600;
+        }
+
+        @media (max-width: 900px) {
+
+            .admin-grid {
+
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<main class="page">
+
+    <div class="container">
+
+        <div class="glass-card">
+
+            <div class="page-title">
+
+                <h1>
+                    Wedding Management
+                </h1>
+
+                <p class="subtitle">
+
+                    Manage wedding bookings,
+                    prevent double bookings
+                    and prepare couples.
+
+                </p>
+
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="mode-note">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="admin-grid">
+
+                <!-- ADD WEDDING -->
+
+                <div class="booking-card">
+
+                    <h2>
+                        Add Wedding
+                    </h2>
+
+                    <form method="POST">
+
+                        <label>
+                            Couple Names
+                        </label>
+
+                        <input
+                            type="text"
+                            name="couple_names"
+                            required
+                        >
+
+                        <label>
+                            Wedding Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="wedding_date"
+                            required
+                        >
+
+                        <label>
+                            Venue Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="venue_name"
+                        >
+
+                        <label>
+                            Couple Password
+                        </label>
+
+                        <input
+                            type="text"
+                            name="couple_password"
+                            required
+                        >
+
+                        <button
+                            type="submit"
+                            style="margin-top:20px;"
+                        >
+
+                            Create Wedding
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <!-- BOOKINGS -->
+
+                <div class="booking-card">
+
+                    <h2>
+                        Booked Weddings
+                    </h2>
+
+                    {% if weddings %}
+
+                        {% for wedding in weddings %}
+
+                            <div class="booking-row">
+
+                                <strong>
+                                    {{ wedding["couple_names"] }}
+                                </strong>
+
+                                <div class="booking-meta">
+
+                                    📅 {{ wedding["wedding_date"] }}
+                                    <br>
+
+                                    📍 {{ wedding["venue_name"] }}
+
+                                </div>
+
+                                <div class="booking-status">
+
+                                    {{ wedding["status"] }}
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p class="small-text">
+                            No weddings created yet.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>
