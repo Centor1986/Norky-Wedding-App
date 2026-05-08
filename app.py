@@ -27,6 +27,16 @@ def get_db_connection():
     return connection
 
 
+def add_column_if_missing(cursor, table_name, column_name, column_definition):
+    cursor.execute(f"PRAGMA table_info({table_name})")
+    existing_columns = [column["name"] for column in cursor.fetchall()]
+
+    if column_name not in existing_columns:
+        cursor.execute(
+            f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_definition}"
+        )
+
+
 def init_database():
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -83,6 +93,7 @@ def init_database():
         guest_name TEXT,
         song_title TEXT,
         artist_name TEXT,
+        youtube_link TEXT DEFAULT '',
         status TEXT DEFAULT 'pending',
         requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
@@ -152,6 +163,8 @@ def init_database():
         enabled INTEGER DEFAULT 0
     )
     """)
+
+    add_column_if_missing(cursor, "reception_requests", "youtube_link", "TEXT DEFAULT ''")
 
     ceremony_items = [
         "Groom and Groomsmen Entrance",
@@ -517,6 +530,13 @@ def landing():
 @app.route("/youtube-search-api")
 @couple_required
 def youtube_search_api():
+    query = request.args.get("q", "").strip()
+    results = youtube_search(query)
+    return jsonify(results)
+
+
+@app.route("/guest-youtube-search-api")
+def guest_youtube_search_api():
     query = request.args.get("q", "").strip()
     results = youtube_search(query)
     return jsonify(results)
@@ -1017,14 +1037,21 @@ def reception():
         guest_name = request.form["guest_name"]
         song_title = request.form["song_title"]
         artist_name = request.form["artist_name"]
+        youtube_link = request.form.get("youtube_link", "")
 
         connection = get_db_connection()
 
         connection.execute("""
         INSERT INTO reception_requests
-        (guest_name, song_title, artist_name, status)
-        VALUES (?, ?, ?, ?)
-        """, (guest_name, song_title, artist_name, "pending"))
+        (guest_name, song_title, artist_name, youtube_link, status)
+        VALUES (?, ?, ?, ?, ?)
+        """, (
+            guest_name,
+            song_title,
+            artist_name,
+            youtube_link,
+            "pending"
+        ))
 
         connection.commit()
         connection.close()

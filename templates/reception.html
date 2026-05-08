@@ -1,65 +1,383 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Reception Requests</title>
-    <link rel="stylesheet" href="/static/style.css">
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+    <style>
+
+        .youtube-results {
+
+            margin-top: 24px;
+
+            display: grid;
+
+            gap: 16px;
+        }
+
+        .youtube-card {
+
+            display: flex;
+
+            gap: 14px;
+
+            align-items: center;
+
+            background:
+                rgba(255,255,255,0.05);
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            border-radius: 16px;
+
+            padding: 14px;
+        }
+
+        .youtube-card img {
+
+            width: 120px;
+
+            border-radius: 10px;
+        }
+
+        .youtube-info {
+
+            flex: 1;
+        }
+
+        .youtube-title {
+
+            font-weight: bold;
+
+            margin-bottom: 6px;
+
+            color: #f2e4c7;
+        }
+
+        .youtube-channel {
+
+            font-size: 13px;
+
+            opacity: 0.72;
+
+            margin-bottom: 10px;
+        }
+
+        .youtube-select {
+
+            border: none;
+
+            background: #d4af37;
+
+            color: black;
+
+            padding: 10px 14px;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            font-weight: 700;
+        }
+
+        .selected-video {
+
+            margin-top: 22px;
+
+            background:
+                rgba(212,175,55,0.12);
+
+            border:
+                1px solid rgba(212,175,55,0.22);
+
+            padding: 16px;
+
+            border-radius: 14px;
+
+            display: none;
+        }
+
+        .selected-video.active {
+
+            display: block;
+        }
+
+        .search-btn {
+
+            margin-top: 12px;
+        }
+
+    </style>
+
 </head>
+
 <body>
 
 <main class="page">
+
     <div class="container">
+
         <div class="glass-card">
 
             <div class="top-logos">
-                <img src="/static/norky-logo.png" class="logo-norky" alt="Norky Logo">
+
+                <img
+                    src="/static/norky-logo.png"
+                    class="logo-norky"
+                >
+
                 <div class="logo-line"></div>
-                <img src="/static/deannie-logo.png" class="logo-deannie" alt="Deannie Landgoed Logo">
+
+                <img
+                    src="/static/deannie-logo.png"
+                    class="logo-deannie"
+                >
+
             </div>
 
-            <h1>Reception Requests</h1>
+            <h1>
+                Reception Requests
+            </h1>
 
             <p class="subtitle">
-                Send your song request to the DJ. Reception requests are curated to protect the dancefloor flow.
+
+                Request songs for the dancefloor
+                and help shape the atmosphere
+                of the celebration.
+
             </p>
 
-            <div class="mode-note">
-                💃 DJ-curated request mode.<br>
-                Your request will be reviewed before it is played.
-            </div>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <div class="mode-note">
-            {{ messages[0] }}
-        </div>
-    {% endif %}
-{% endwith %}
-            <form method="POST" class="form-box">
-                <div>
-                    <label>Your name</label>
-                    <input type="text" name="guest_name" placeholder="Example: Kyle" required>
+                    <div class="mode-note">
+                        {{ messages[0] }}
+                    </div>
+
+                {% endif %}
+            {% endwith %}
+
+            <form
+                method="POST"
+                class="form-box"
+            >
+
+                <label>
+                    Your Name
+                </label>
+
+                <input
+                    type="text"
+                    name="guest_name"
+                    placeholder="Enter your name"
+                    required
+                >
+
+                <label>
+                    Song Title
+                </label>
+
+                <input
+                    type="text"
+                    id="song_title"
+                    name="song_title"
+                    placeholder="Song title"
+                    required
+                >
+
+                <label>
+                    Artist
+                </label>
+
+                <input
+                    type="text"
+                    id="artist_name"
+                    name="artist_name"
+                    placeholder="Artist name"
+                    required
+                >
+
+                <input
+                    type="hidden"
+                    id="youtube_link"
+                    name="youtube_link"
+                >
+
+                <button
+                    type="button"
+                    class="search-btn"
+                    onclick="searchYouTube()"
+                >
+                    Search YouTube Versions
+                </button>
+
+                <div
+                    id="youtube_results"
+                    class="youtube-results"
+                ></div>
+
+                <div
+                    id="selected_video"
+                    class="selected-video"
+                >
+
+                    <strong>
+                        Selected YouTube Version
+                    </strong>
+
+                    <br><br>
+
+                    <a
+                        id="selected_video_link"
+                        href="#"
+                        target="_blank"
+                        style="color:#f2d78c;"
+                    >
+                        Open Selected Video
+                    </a>
+
                 </div>
 
-                <div>
-                    <label>Song title</label>
-                    <input type="text" name="song_title" placeholder="Example: September" required>
-                </div>
+                <br>
 
-                <div>
-                    <label>Artist</label>
-                    <input type="text" name="artist_name" placeholder="Example: Earth, Wind & Fire" required>
-                </div>
+                <button type="submit">
 
-                <button type="submit">Send Request to DJ</button>
+                    Send Request to DJ
+
+                </button>
+
             </form>
 
-            <a href="/" class="back-link">← Back to Wedding Home</a>
+            <br>
+
+            <a
+                href="/"
+                class="back-link"
+            >
+
+                ← Back to Home
+
+            </a>
 
         </div>
+
     </div>
+
 </main>
+
+<script>
+
+async function searchYouTube() {
+
+    const title =
+        document.getElementById("song_title").value;
+
+    const artist =
+        document.getElementById("artist_name").value;
+
+    const query =
+        `${title} ${artist}`;
+
+    const resultsContainer =
+        document.getElementById("youtube_results");
+
+    resultsContainer.innerHTML =
+        "<p>Searching YouTube...</p>";
+
+    const response = await fetch(
+        `/guest-youtube-search-api?q=${encodeURIComponent(query)}`
+    );
+
+    const results =
+        await response.json();
+
+    resultsContainer.innerHTML = "";
+
+    if (!results.length) {
+
+        resultsContainer.innerHTML =
+            "<p>No YouTube results found.</p>";
+
+        return;
+    }
+
+    results.forEach(video => {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "youtube-card";
+
+        card.innerHTML = `
+
+            <img src="${video.thumbnail}">
+
+            <div class="youtube-info">
+
+                <div class="youtube-title">
+                    ${video.title}
+                </div>
+
+                <div class="youtube-channel">
+                    ${video.channel}
+                </div>
+
+                <button
+                    type="button"
+                    class="youtube-select"
+                    onclick="selectVideo('${video.youtube_link}')"
+                >
+
+                    Select This Version
+
+                </button>
+
+            </div>
+
+        `;
+
+        resultsContainer.appendChild(card);
+
+    });
+
+}
+
+
+function selectVideo(link) {
+
+    document.getElementById("youtube_link").value =
+        link;
+
+    const selectedBox =
+        document.getElementById("selected_video");
+
+    const selectedLink =
+        document.getElementById("selected_video_link");
+
+    selectedLink.href = link;
+
+    selectedBox.classList.add("active");
+
+    document.getElementById("youtube_results").innerHTML =
+        "";
+
+}
+
+</script>
 
 </body>
 </html>
