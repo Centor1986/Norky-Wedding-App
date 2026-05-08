@@ -410,6 +410,139 @@ button,
         0 0 22px rgba(255,215,120,0.18);
 }
 
+/* =========================================
+   GLOBAL SPACING FIXES
+========================================= */
+
+.top-spacing {
+    margin-top: 24px;
+}
+
+.medium-spacing {
+    margin-top: 18px;
+}
+
+.small-spacing {
+    margin-top: 10px;
+}
+
+.section-spacing {
+    margin-top: 42px;
+}
+
+.section-spacing-large {
+    margin-top: 64px;
+}
+
+/* BUTTON SPACING */
+
+button,
+.btn {
+    margin-top: 18px;
+}
+
+/* HEADINGS */
+
+h1 {
+    margin-bottom: 22px;
+}
+
+h2 {
+    margin-top: 34px;
+    margin-bottom: 18px;
+}
+
+h3 {
+    margin-top: 26px;
+    margin-bottom: 12px;
+}
+
+/* NOW PLAYING SECTION */
+
+.now-playing-box {
+    margin-top: 28px;
+}
+
+.now-playing-title {
+    margin-top: 12px;
+    margin-bottom: 16px;
+    display: block;
+}
+
+/* ICON SPACING */
+
+.section-icon {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.big-icon {
+    margin-bottom: 16px;
+}
+
+/* FORM SECTIONS */
+
+.form-box {
+    gap: 22px;
+}
+
+.form-section {
+    margin-top: 34px;
+}
+
+/* YOUTUBE SEARCH RESULTS */
+
+.youtube-results {
+    margin-top: 26px;
+}
+
+.youtube-card {
+    margin-bottom: 14px;
+}
+
+/* NAVIGATION CARDS */
+
+.navigation-grid,
+.admin-actions {
+    margin-top: 28px;
+}
+
+/* FLASH MESSAGES */
+
+.mode-note {
+    margin-top: 18px;
+    margin-bottom: 28px;
+}
+
+/* QR SECTION */
+
+.qr-wrapper {
+    margin-top: 26px;
+}
+
+/* MOBILE FIXES */
+
+@media (max-width: 768px) {
+
+    h1 {
+        margin-bottom: 18px;
+    }
+
+    h2 {
+        margin-top: 28px;
+    }
+
+    button,
+    .btn {
+        margin-top: 16px;
+    }
+
+    .form-section {
+        margin-top: 28px;
+    }
+
+}
+
 button:hover,
 .btn:hover {
 
