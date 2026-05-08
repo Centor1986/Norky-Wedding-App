@@ -18,6 +18,7 @@ app.secret_key = os.getenv("SECRET_KEY", "norky-secret-key")
 PLAYLIST_ID = os.getenv("SPOTIFY_PREDRINKS_PLAYLIST_ID")
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "norky123")
+COUPLE_PASSWORD = os.getenv("COUPLE_PASSWORD", "wedding123")
 
 
 # =========================
@@ -25,20 +26,14 @@ ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "norky123")
 # =========================
 
 def get_db_connection():
-
     connection = sqlite3.connect("norky_wedding.db")
     connection.row_factory = sqlite3.Row
-
     return connection
 
 
 def init_database():
-
     connection = get_db_connection()
-
     cursor = connection.cursor()
-
-    # SETTINGS
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS wedding_settings (
@@ -81,8 +76,6 @@ def init_database():
     )
     """)
 
-    # PRE-DRINKS
-
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS predrinks_requests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -95,8 +88,6 @@ def init_database():
     )
     """)
 
-    # RECEPTION REQUESTS
-
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS reception_requests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -108,8 +99,6 @@ def init_database():
     )
     """)
 
-    # ACTIVITY
-
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS activity_log (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -120,8 +109,6 @@ def init_database():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
-
-    # FORMALITIES
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS formalities (
@@ -137,8 +124,6 @@ def init_database():
     )
     """)
 
-    # EXTRA CEREMONY SONGS
-
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS ceremony_extra_songs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -149,8 +134,6 @@ def init_database():
         prep_status TEXT DEFAULT 'Pending Download'
     )
     """)
-
-    # MUST PLAY
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS must_play (
@@ -163,8 +146,6 @@ def init_database():
     )
     """)
 
-    # DO NOT PLAY
-
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS do_not_play (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -174,8 +155,6 @@ def init_database():
         notes TEXT
     )
     """)
-
-    # VIBES
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS vibe_preferences (
@@ -206,7 +185,6 @@ def init_database():
     ]
 
     for item in ceremony_items:
-
         existing = cursor.execute("""
         SELECT id
         FROM formalities
@@ -215,7 +193,6 @@ def init_database():
         """, (item,)).fetchone()
 
         if not existing:
-
             cursor.execute("""
             INSERT INTO formalities
             (
@@ -233,7 +210,6 @@ def init_database():
             """, (item,))
 
     for item in reception_items:
-
         existing = cursor.execute("""
         SELECT id
         FROM formalities
@@ -242,7 +218,6 @@ def init_database():
         """, (item,)).fetchone()
 
         if not existing:
-
             cursor.execute("""
             INSERT INTO formalities
             (
@@ -277,7 +252,6 @@ def init_database():
     ]
 
     for vibe in vibe_options:
-
         cursor.execute("""
         INSERT OR IGNORE INTO vibe_preferences
         (
@@ -300,7 +274,6 @@ init_database()
 # =========================
 
 def get_wedding_settings():
-
     connection = get_db_connection()
 
     settings = connection.execute("""
@@ -315,22 +288,26 @@ def get_wedding_settings():
 
 
 def admin_required(f):
-
     @wraps(f)
-
     def decorated_function(*args, **kwargs):
-
         if not session.get("admin_logged_in"):
-
             return redirect("/admin-login")
+        return f(*args, **kwargs)
 
+    return decorated_function
+
+
+def couple_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("couple_logged_in"):
+            return redirect("/couple-login")
         return f(*args, **kwargs)
 
     return decorated_function
 
 
 def parse_wedding_date(date_text):
-
     if not date_text:
         return None
 
@@ -343,7 +320,6 @@ def parse_wedding_date(date_text):
     ]
 
     for fmt in formats:
-
         try:
             return datetime.strptime(
                 date_text.strip(),
@@ -357,12 +333,10 @@ def parse_wedding_date(date_text):
 
 
 def is_couple_portal_locked(settings):
-
     if not settings:
         return False
 
     try:
-
         if settings["couple_portal_locked"] == 1:
             return True
 
@@ -383,7 +357,6 @@ def is_couple_portal_locked(settings):
 
 
 def get_logged_in_spotify():
-
     token_info = session.get(
         "spotify_token_info",
         None
@@ -398,9 +371,7 @@ def get_logged_in_spotify():
 
 
 def get_now_playing(sp):
-
     try:
-
         current = sp.current_user_playing_track()
 
         if not current or not current.get("item"):
@@ -421,12 +392,10 @@ def get_now_playing(sp):
         }
 
     except Exception:
-
         return None
 
 
 def youtube_search(query):
-
     if not query or not YOUTUBE_API_KEY:
         return []
 
@@ -441,7 +410,6 @@ def youtube_search(query):
     }
 
     try:
-
         response = requests.get(
             url,
             params=params,
@@ -451,13 +419,11 @@ def youtube_search(query):
         data = response.json()
 
     except Exception:
-
         return []
 
     results = []
 
     for item in data.get("items", []):
-
         video_id = item["id"]["videoId"]
 
         results.append({
@@ -474,7 +440,6 @@ def youtube_search(query):
 
 
 def get_top_requested():
-
     connection = get_db_connection()
 
     results = connection.execute("""
@@ -490,7 +455,6 @@ def get_top_requested():
 
 
 def get_recent_activity():
-
     connection = get_db_connection()
 
     results = connection.execute("""
@@ -511,7 +475,6 @@ def log_activity(
     artist_name,
     action
 ):
-
     connection = get_db_connection()
 
     connection.execute("""
@@ -535,7 +498,6 @@ def log_activity(
 
 
 def get_formalities_data():
-
     connection = get_db_connection()
 
     ceremony_formalities = connection.execute("""
@@ -589,12 +551,7 @@ def get_formalities_data():
     )
 
 
-# =========================
-# QR CODE FIX
-# =========================
-
 def generate_qr_code():
-
     os.makedirs(
         os.path.join("static", "qr"),
         exist_ok=True
@@ -624,17 +581,12 @@ def generate_qr_code():
 
 @app.route("/admin-login", methods=["GET", "POST"])
 def admin_login():
-
     if request.method == "POST":
-
         password = request.form["password"]
 
         if password == ADMIN_PASSWORD:
-
             session["admin_logged_in"] = True
-
             flash("Admin login successful.")
-
             return redirect("/admin")
 
         flash("Incorrect password.")
@@ -646,7 +598,6 @@ def admin_login():
 
 @app.route("/admin-logout")
 def admin_logout():
-
     session.pop(
         "admin_logged_in",
         None
@@ -657,13 +608,41 @@ def admin_logout():
     return redirect("/")
 
 
+@app.route("/couple-login", methods=["GET", "POST"])
+def couple_login():
+    if request.method == "POST":
+        password = request.form["password"]
+
+        if password == COUPLE_PASSWORD:
+            session["couple_logged_in"] = True
+            flash("Couple login successful.")
+            return redirect("/couple")
+
+        flash("Incorrect couple password.")
+
+    return render_template(
+        "couple_login.html"
+    )
+
+
+@app.route("/couple-logout")
+def couple_logout():
+    session.pop(
+        "couple_logged_in",
+        None
+    )
+
+    flash("Couple logged out successfully.")
+
+    return redirect("/")
+
+
 # =========================
 # ROUTES
 # =========================
 
 @app.route("/")
 def landing():
-
     settings = get_wedding_settings()
 
     return render_template(
@@ -673,8 +652,8 @@ def landing():
 
 
 @app.route("/youtube-search-api")
+@couple_required
 def youtube_search_api():
-
     query = request.args.get(
         "q",
         ""
@@ -688,7 +667,6 @@ def youtube_search_api():
 @app.route("/export-formalities-pdf")
 @admin_required
 def export_formalities_pdf():
-
     settings = get_wedding_settings()
 
     (
@@ -725,11 +703,9 @@ def export_formalities_pdf():
 @app.route("/settings", methods=["GET", "POST"])
 @admin_required
 def wedding_settings():
-
     connection = get_db_connection()
 
     if request.method == "POST":
-
         connection.execute("""
         UPDATE wedding_settings
         SET
@@ -771,14 +747,161 @@ def wedding_settings():
     )
 
 
-@app.route("/couple")
+@app.route("/couple", methods=["GET", "POST"])
+@couple_required
 def couple_portal():
-
     settings = get_wedding_settings()
 
     portal_locked = is_couple_portal_locked(
         settings
     )
+
+    if request.method == "POST":
+        if portal_locked:
+            flash("The couple portal is locked. Please contact Norky directly for urgent changes.")
+            return redirect("/couple")
+
+        connection = get_db_connection()
+
+        formalities = connection.execute("""
+        SELECT *
+        FROM formalities
+        ORDER BY id ASC
+        """).fetchall()
+
+        for item in formalities:
+            formality_id = item["id"]
+
+            connection.execute("""
+            UPDATE formalities
+            SET
+                song_title = ?,
+                artist_name = ?,
+                youtube_link = ?,
+                notes = ?,
+                not_applicable = ?
+            WHERE id = ?
+            """, (
+                request.form.get(f"song_title_{formality_id}", ""),
+                request.form.get(f"artist_name_{formality_id}", ""),
+                request.form.get(f"youtube_link_{formality_id}", ""),
+                request.form.get(f"notes_{formality_id}", ""),
+                1 if request.form.get(f"not_applicable_{formality_id}") == "on" else 0,
+                formality_id
+            ))
+
+        extra_song_titles = request.form.getlist("extra_song_title[]")
+        extra_artist_names = request.form.getlist("extra_artist_name[]")
+        extra_youtube_links = request.form.getlist("extra_youtube_link[]")
+        extra_notes = request.form.getlist("extra_notes[]")
+
+        for i in range(len(extra_song_titles)):
+            song_title = extra_song_titles[i].strip()
+
+            artist_name = extra_artist_names[i].strip() if i < len(extra_artist_names) else ""
+            youtube_link = extra_youtube_links[i].strip() if i < len(extra_youtube_links) else ""
+            notes = extra_notes[i].strip() if i < len(extra_notes) else ""
+
+            if song_title:
+                connection.execute("""
+                INSERT INTO ceremony_extra_songs
+                (
+                    song_title,
+                    artist_name,
+                    youtube_link,
+                    notes
+                )
+                VALUES (?, ?, ?, ?)
+                """, (
+                    song_title,
+                    artist_name,
+                    youtube_link,
+                    notes
+                ))
+
+        vibe_preferences = connection.execute("""
+        SELECT *
+        FROM vibe_preferences
+        ORDER BY id ASC
+        """).fetchall()
+
+        for vibe in vibe_preferences:
+            vibe_id = vibe["id"]
+            enabled = 1 if request.form.get(f"vibe_{vibe_id}") == "on" else 0
+
+            connection.execute("""
+            UPDATE vibe_preferences
+            SET enabled = ?
+            WHERE id = ?
+            """, (
+                enabled,
+                vibe_id
+            ))
+
+        must_song_titles = request.form.getlist("must_song_title[]")
+        must_artist_names = request.form.getlist("must_artist_name[]")
+        must_youtube_links = request.form.getlist("must_youtube_link[]")
+        must_notes_list = request.form.getlist("must_notes[]")
+
+        for i in range(len(must_song_titles)):
+            song_title = must_song_titles[i].strip()
+
+            artist_name = must_artist_names[i].strip() if i < len(must_artist_names) else ""
+            youtube_link = must_youtube_links[i].strip() if i < len(must_youtube_links) else ""
+            notes = must_notes_list[i].strip() if i < len(must_notes_list) else ""
+
+            if song_title:
+                connection.execute("""
+                INSERT INTO must_play
+                (
+                    song_title,
+                    artist_name,
+                    youtube_link,
+                    notes
+                )
+                VALUES (?, ?, ?, ?)
+                """, (
+                    song_title,
+                    artist_name,
+                    youtube_link,
+                    notes
+                ))
+
+        no_song_titles = request.form.getlist("no_song_title[]")
+        no_artist_names = request.form.getlist("no_artist_name[]")
+        no_youtube_links = request.form.getlist("no_youtube_link[]")
+        no_notes_list = request.form.getlist("no_notes[]")
+
+        for i in range(len(no_song_titles)):
+            song_title = no_song_titles[i].strip()
+
+            artist_name = no_artist_names[i].strip() if i < len(no_artist_names) else ""
+            youtube_link = no_youtube_links[i].strip() if i < len(no_youtube_links) else ""
+            notes = no_notes_list[i].strip() if i < len(no_notes_list) else ""
+
+            if song_title:
+                connection.execute("""
+                INSERT INTO do_not_play
+                (
+                    song_title,
+                    artist_name,
+                    youtube_link,
+                    notes
+                )
+                VALUES (?, ?, ?, ?)
+                """, (
+                    song_title,
+                    artist_name,
+                    youtube_link,
+                    notes
+                ))
+
+        connection.commit()
+        connection.close()
+
+        flash("Wedding music details updated successfully.")
+
+        return redirect("/couple")
 
     (
         ceremony_formalities,
@@ -805,7 +928,6 @@ def couple_portal():
 @app.route("/admin")
 @admin_required
 def admin():
-
     settings = get_wedding_settings()
 
     connection = get_db_connection()
@@ -835,7 +957,6 @@ def admin():
 @app.route("/admin/formalities")
 @admin_required
 def admin_formalities():
-
     settings = get_wedding_settings()
 
     (
@@ -859,32 +980,260 @@ def admin_formalities():
     )
 
 
-@app.route("/predrinks")
-def predrinks():
+@app.route("/update-prep-status", methods=["POST"])
+@admin_required
+def update_prep_status():
+    data = request.json
 
-    settings = get_wedding_settings()
+    table = data.get("table")
+    row_id = data.get("id")
+    status = data.get("status")
 
+    allowed_tables = [
+        "formalities",
+        "ceremony_extra_songs",
+        "must_play"
+    ]
+
+    if table not in allowed_tables:
+        return jsonify({"success": False})
+
+    connection = get_db_connection()
+
+    connection.execute(f"""
+    UPDATE {table}
+    SET prep_status = ?
+    WHERE id = ?
+    """, (
+        status,
+        row_id
+    ))
+
+    connection.commit()
+    connection.close()
+
+    return jsonify({"success": True})
+
+
+@app.route("/connect-spotify")
+def connect_spotify():
+    spotify_oauth = create_spotify_oauth()
+    auth_url = spotify_oauth.get_authorize_url()
+
+    return redirect(auth_url)
+
+
+@app.route("/callback")
+def callback():
+    spotify_oauth = create_spotify_oauth()
+    code = request.args.get("code")
+
+    if not code:
+        flash("Spotify connection failed.")
+        return redirect("/predrinks")
+
+    token_info = spotify_oauth.get_access_token(
+        code,
+        as_dict=True
+    )
+
+    session["spotify_token_info"] = token_info
+
+    flash("Spotify connected successfully.")
+
+    return redirect("/predrinks")
+
+
+@app.route("/now-playing")
+def now_playing_api():
     sp = get_logged_in_spotify()
 
-    now_playing = (
-        get_now_playing(sp)
-        if sp else None
-    )
+    if not sp:
+        return jsonify({
+            "connected": False,
+            "now_playing": None
+        })
+
+    now_playing = get_now_playing(sp)
+
+    return jsonify({
+        "connected": True,
+        "now_playing": now_playing
+    })
+
+
+@app.route("/live-activity")
+def live_activity_api():
+    recent_activity = get_recent_activity()
+
+    return jsonify([
+        {
+            "guest_name": row["guest_name"],
+            "song_title": row["song_title"],
+            "artist_name": row["artist_name"],
+            "action": row["action"],
+            "created_at": row["created_at"]
+        }
+        for row in recent_activity
+    ])
+
+
+@app.route("/predrinks", methods=["GET", "POST"])
+def predrinks():
+    spotify_results = []
+    sp = get_logged_in_spotify()
+    now_playing = get_now_playing(sp) if sp else None
+    top_requested = get_top_requested()
+    recent_activity = get_recent_activity()
+    settings = get_wedding_settings()
+
+    if request.method == "POST":
+        if not sp:
+            flash("Please connect Spotify first.")
+            return redirect("/predrinks")
+
+        if "search" in request.form:
+            search_query = request.form["search_query"]
+
+            results = sp.search(
+                q=search_query,
+                type="track",
+                limit=10
+            )
+
+            spotify_results = results["tracks"]["items"]
+
+            return render_template(
+                "predrinks.html",
+                spotify_results=spotify_results,
+                spotify_connected=True,
+                top_requested=top_requested,
+                recent_activity=recent_activity,
+                now_playing=now_playing,
+                settings=settings
+            )
+
+        if "add_song" in request.form:
+            guest_name = request.form["guest_name"]
+            song_title = request.form["song_title"]
+            artist_name = request.form["artist_name"]
+            track_uri = request.form["track_uri"]
+
+            connection = get_db_connection()
+
+            existing_song = connection.execute("""
+            SELECT *
+            FROM predrinks_requests
+            WHERE track_uri = ?
+            """, (
+                track_uri,
+            )).fetchone()
+
+            if existing_song:
+                connection.execute("""
+                UPDATE predrinks_requests
+                SET votes = ?
+                WHERE track_uri = ?
+                """, (
+                    existing_song["votes"] + 1,
+                    track_uri
+                ))
+
+                connection.commit()
+                connection.close()
+
+                log_activity(
+                    guest_name,
+                    song_title,
+                    artist_name,
+                    "voted for"
+                )
+
+                flash(f"{song_title} already exists. Vote added!")
+
+                return redirect("/predrinks")
+
+            sp.playlist_add_items(
+                PLAYLIST_ID,
+                [track_uri]
+            )
+
+            connection.execute("""
+            INSERT INTO predrinks_requests
+            (
+                guest_name,
+                song_title,
+                artist_name,
+                track_uri,
+                votes
+            )
+            VALUES (?, ?, ?, ?, ?)
+            """, (
+                guest_name,
+                song_title,
+                artist_name,
+                track_uri,
+                1
+            ))
+
+            connection.commit()
+            connection.close()
+
+            log_activity(
+                guest_name,
+                song_title,
+                artist_name,
+                "added"
+            )
+
+            flash("Song added to Spotify playlist!")
+
+            return redirect("/predrinks")
 
     return render_template(
         "predrinks.html",
+        spotify_results=spotify_results,
         spotify_connected=sp is not None,
+        top_requested=top_requested,
+        recent_activity=recent_activity,
         now_playing=now_playing,
-        top_requested=get_top_requested(),
-        recent_activity=get_recent_activity(),
         settings=settings
     )
 
 
-@app.route("/reception")
+@app.route("/reception", methods=["GET", "POST"])
 def reception():
-
     settings = get_wedding_settings()
+
+    if request.method == "POST":
+        guest_name = request.form["guest_name"]
+        song_title = request.form["song_title"]
+        artist_name = request.form["artist_name"]
+
+        connection = get_db_connection()
+
+        connection.execute("""
+        INSERT INTO reception_requests
+        (
+            guest_name,
+            song_title,
+            artist_name,
+            status
+        )
+        VALUES (?, ?, ?, ?)
+        """, (
+            guest_name,
+            song_title,
+            artist_name,
+            "pending"
+        ))
+
+        connection.commit()
+        connection.close()
+
+        flash("Request sent to DJ.")
+
+        return redirect("/reception")
 
     return render_template(
         "reception.html",
@@ -892,11 +1241,110 @@ def reception():
     )
 
 
+@app.route("/approve/<int:request_id>")
+@admin_required
+def approve_request(request_id):
+    connection = get_db_connection()
+
+    connection.execute("""
+    UPDATE reception_requests
+    SET status = ?
+    WHERE id = ?
+    """, (
+        "approved",
+        request_id
+    ))
+
+    connection.commit()
+    connection.close()
+
+    return redirect("/admin")
+
+
+@app.route("/reject/<int:request_id>")
+@admin_required
+def reject_request(request_id):
+    connection = get_db_connection()
+
+    connection.execute("""
+    UPDATE reception_requests
+    SET status = ?
+    WHERE id = ?
+    """, (
+        "rejected",
+        request_id
+    ))
+
+    connection.commit()
+    connection.close()
+
+    return redirect("/admin")
+
+
+@app.route("/played/<int:request_id>")
+@admin_required
+def played_request(request_id):
+    connection = get_db_connection()
+
+    connection.execute("""
+    UPDATE reception_requests
+    SET status = ?
+    WHERE id = ?
+    """, (
+        "played",
+        request_id
+    ))
+
+    connection.commit()
+    connection.close()
+
+    return redirect("/admin")
+
+
+@app.route("/delete-must-play/<int:song_id>")
+@couple_required
+def delete_must_play(song_id):
+    connection = get_db_connection()
+
+    connection.execute("""
+    DELETE FROM must_play
+    WHERE id = ?
+    """, (
+        song_id,
+    ))
+
+    connection.commit()
+    connection.close()
+
+    flash("Must-play song removed.")
+
+    return redirect("/couple")
+
+
+@app.route("/delete-do-not-play/<int:song_id>")
+@couple_required
+def delete_do_not_play(song_id):
+    connection = get_db_connection()
+
+    connection.execute("""
+    DELETE FROM do_not_play
+    WHERE id = ?
+    """, (
+        song_id,
+    ))
+
+    connection.commit()
+    connection.close()
+
+    flash("Do-not-play song removed.")
+
+    return redirect("/couple")
+
+
 @app.route("/qr")
+@admin_required
 def qr_page():
-
     qr_image = generate_qr_code()
-
     settings = get_wedding_settings()
 
     return render_template(
@@ -911,5 +1359,4 @@ def qr_page():
 # =========================
 
 if __name__ == "__main__":
-
     app.run(debug=True)

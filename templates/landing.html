@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -11,440 +10,224 @@
 
     <title>Norky Wedding Experience</title>
 
-    <link
-        rel="stylesheet"
-        href="/static/style.css"
-    >
+    <link rel="stylesheet" href="/static/style.css">
 
     <style>
-
-        .hero {
-
-            text-align: center;
-
-            padding: 30px 0 10px;
+        .landing-shell {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
         }
 
-        .hero h1 {
+        .landing-card {
+            width: 100%;
+            max-width: 760px;
+            text-align: center;
+            background: rgba(0,0,0,0.55);
+            border: 1px solid rgba(212,175,55,0.28);
+            border-radius: 30px;
+            padding: 46px 34px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+        }
 
+        .landing-logos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .landing-logos img {
+            max-height: 64px;
+            object-fit: contain;
+        }
+
+        .landing-divider {
+            width: 1px;
+            height: 52px;
+            background: rgba(212,175,55,0.35);
+        }
+
+        .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #d4af37;
+            font-size: 12px;
+            margin-bottom: 14px;
+        }
+
+        .landing-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 56px;
+            line-height: 1;
+            color: #f2e4c7;
             margin-bottom: 12px;
         }
 
-        .hero-subtitle {
-
-            max-width: 760px;
-
-            margin: auto;
-
+        .landing-subtitle {
+            color: rgba(255,255,255,0.82);
             line-height: 1.8;
-
-            opacity: 0.88;
-
-            font-size: 15px;
+            max-width: 560px;
+            margin: 0 auto 34px;
         }
 
-        .navigation-grid {
-
+        .guest-actions {
             display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(260px, 1fr));
-
-            gap: 22px;
-
-            margin-top: 45px;
-        }
-
-        .nav-card {
-
-            background:
-                rgba(255,255,255,0.05);
-
-            border:
-                1px solid rgba(255,255,255,0.08);
-
-            border-radius: 22px;
-
-            padding: 28px;
-
-            text-decoration: none;
-
-            color: white;
-
-            transition: 0.28s;
-
-            position: relative;
-
-            overflow: hidden;
-        }
-
-        .nav-card:hover {
-
-            transform:
-                translateY(-6px);
-
-            background:
-                rgba(255,255,255,0.08);
-        }
-
-        .nav-icon {
-
-            font-size: 42px;
-
-            margin-bottom: 18px;
-        }
-
-        .nav-card h2 {
-
-            font-size: 30px;
-
-            margin-bottom: 10px;
-        }
-
-        .nav-card p {
-
-            line-height: 1.7;
-
-            opacity: 0.82;
-
-            font-size: 14px;
-        }
-
-        .section-heading {
-
-            text-align: center;
-
-            margin-top: 60px;
-
-            margin-bottom: 24px;
-        }
-
-        .section-heading h2 {
-
-            margin-bottom: 10px;
-        }
-
-        .admin-links {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(220px, 1fr));
-
+            grid-template-columns: repeat(2, 1fr);
             gap: 18px;
+            margin-top: 30px;
         }
 
-        .admin-card {
-
-            background:
-                rgba(212,175,55,0.12);
-
-            border:
-                1px solid rgba(212,175,55,0.24);
-
-            border-radius: 18px;
-
-            padding: 20px;
-
+        .guest-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(212,175,55,0.20);
+            border-radius: 22px;
+            padding: 28px 22px;
             text-decoration: none;
-
             color: white;
-
             transition: 0.25s;
         }
 
-        .admin-card:hover {
+        .guest-card:hover {
+            transform: translateY(-5px);
+            background: rgba(212,175,55,0.13);
+        }
 
-            transform:
-                translateY(-4px);
+        .guest-icon {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
 
-            background:
-                rgba(212,175,55,0.18);
+        .guest-card h2 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .guest-card p {
+            font-size: 14px;
+            line-height: 1.7;
+            opacity: 0.82;
+        }
+
+        .private-links {
+            margin-top: 34px;
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
+
+        .private-links a {
+            color: rgba(242,215,140,0.78);
+            text-decoration: none;
+        }
+
+        .private-links a:hover {
+            color: #f2d78c;
         }
 
         .footer-note {
-
-            text-align: center;
-
-            margin-top: 60px;
-
-            opacity: 0.6;
-
-            font-size: 13px;
-
-            line-height: 1.8;
+            margin-top: 34px;
+            opacity: 0.58;
+            font-size: 12px;
+            line-height: 1.7;
         }
 
-    </style>
+        @media (max-width: 700px) {
+            .landing-card {
+                padding: 34px 20px;
+                border-radius: 24px;
+            }
 
+            .landing-title {
+                font-size: 40px;
+            }
+
+            .guest-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .landing-divider {
+                display: none;
+            }
+
+            .landing-logos {
+                flex-wrap: wrap;
+            }
+
+            .landing-logos img {
+                max-height: 54px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<main class="page">
+<main class="landing-shell">
 
-    <div class="container">
+    <section class="landing-card">
 
-        <div class="glass-card">
+        <div class="landing-logos">
+            <img src="/static/norky-logo.png" alt="Norky Logo">
+            <div class="landing-divider"></div>
+            <img src="/static/deannie-logo.png" alt="Deannie Landgoed Logo">
+        </div>
 
-            <!-- LOGOS -->
+        <div class="eyebrow">
+            Welcome to
+        </div>
 
-            <div class="top-logos">
+        <div class="landing-title">
+            {{ settings["couple_names"] }}
+        </div>
 
-                <img
-                    src="/static/norky-logo.png"
-                    class="logo-norky"
-                >
+        <p class="landing-subtitle">
+            {{ settings["welcome_message"] }}
+        </p>
 
-                <div class="logo-line"></div>
+        <div class="guest-actions">
 
-                <img
-                    src="/static/deannie-logo.png"
-                    class="logo-deannie"
-                >
+            <a href="/predrinks" class="guest-card">
+                <div class="guest-icon">🍸</div>
 
-            </div>
+                <h2>Pre-Drinks</h2>
 
-            <!-- HERO -->
-
-            <section class="hero">
-
-                <h1>
-                    {{ settings["couple_names"] }}
-                </h1>
-
-                <p class="hero-subtitle">
-
-                    {{ settings["welcome_message"] }}
-
+                <p>
+                    Request and vote for songs during pre-drinks.
                 </p>
+            </a>
 
-            </section>
+            <a href="/reception" class="guest-card">
+                <div class="guest-icon">🎶</div>
 
-            <!-- GUEST NAVIGATION -->
+                <h2>Reception</h2>
 
-            <section>
-
-                <div class="navigation-grid">
-
-                    <!-- PRE-DRINKS -->
-
-                    <a
-                        href="/predrinks"
-                        class="nav-card"
-                    >
-
-                        <div class="nav-icon">
-                            🍸
-                        </div>
-
-                        <h2>
-                            Pre-Drinks Playlist
-                        </h2>
-
-                        <p>
-
-                            Search Spotify, request songs,
-                            vote on tracks and help build
-                            the wedding pre-drinks atmosphere.
-
-                        </p>
-
-                    </a>
-
-                    <!-- RECEPTION -->
-
-                    <a
-                        href="/reception"
-                        class="nav-card"
-                    >
-
-                        <div class="nav-icon">
-                            🎶
-                        </div>
-
-                        <h2>
-                            Reception Requests
-                        </h2>
-
-                        <p>
-
-                            Guests can send live song requests
-                            directly to the DJ during the reception.
-
-                        </p>
-
-                    </a>
-
-                    <!-- COUPLE -->
-
-                    <a
-                        href="/couple"
-                        class="nav-card"
-                    >
-
-                        <div class="nav-icon">
-                            💍
-                        </div>
-
-                        <h2>
-                            Couple Music Portal
-                        </h2>
-
-                        <p>
-
-                            Ceremony songs, reception formalities,
-                            must-play songs, vibe preferences
-                            and wedding music planning.
-
-                        </p>
-
-                    </a>
-
-                    <!-- QR -->
-
-                    <a
-                        href="/qr"
-                        class="nav-card"
-                    >
-
-                        <div class="nav-icon">
-                            📱
-                        </div>
-
-                        <h2>
-                            Wedding QR Access
-                        </h2>
-
-                        <p>
-
-                            Open the mobile QR poster
-                            guests can scan at the venue.
-
-                        </p>
-
-                    </a>
-
-                </div>
-
-            </section>
-
-            <!-- ADMIN -->
-
-            <section class="section-heading">
-
-                <h2>
-                    DJ & Admin Controls
-                </h2>
-
-                <p class="subtitle">
-
-                    Private access for wedding preparation,
-                    downloads and request management.
-
+                <p>
+                    Send song requests directly to the DJ.
                 </p>
-
-            </section>
-
-            <section class="admin-links">
-
-                <a
-                    href="/admin"
-                    class="admin-card"
-                >
-
-                    <strong>
-                        DJ Dashboard
-                    </strong>
-
-                    <br><br>
-
-                    Manage live requests,
-                    approvals and reception flow.
-
-                </a>
-
-                <a
-                    href="/admin/formalities"
-                    class="admin-card"
-                >
-
-                    <strong>
-                        Formalities Prep
-                    </strong>
-
-                    <br><br>
-
-                    Track downloaded songs,
-                    cue preparation and wedding workflow.
-
-                </a>
-
-                <a
-                    href="/export-formalities-pdf"
-                    class="admin-card"
-                >
-
-                    <strong>
-                        Export PDF
-                    </strong>
-
-                    <br><br>
-
-                    Generate printable wedding prep sheets
-                    and backup documentation.
-
-                </a>
-
-                <a
-                    href="/settings"
-                    class="admin-card"
-                >
-
-                    <strong>
-                        Wedding Settings
-                    </strong>
-
-                    <br><br>
-
-                    Edit wedding names,
-                    dates, links and branding.
-
-                </a>
-
-                <a
-                    href="/admin-login"
-                    class="admin-card"
-                >
-
-                    <strong>
-                        Admin Login
-                    </strong>
-
-                    <br><br>
-
-                    Secure access
-                    to admin-only features.
-
-                </a>
-
-            </section>
-
-            <!-- FOOTER -->
-
-            <div class="footer-note">
-
-                Norky Wedding Media & Mobile DJ
-                <br>
-
-                Designed for elegant,
-                interactive wedding experiences.
-
-            </div>
+            </a>
 
         </div>
 
-    </div>
+        <div class="private-links">
+            <a href="/couple-login">Couple Portal</a>
+            <span>•</span>
+            <a href="/admin-login">DJ/Admin Access</a>
+        </div>
+
+        <div class="footer-note">
+            Music & Atmosphere by Norky
+            <br>
+            In collaboration with Deannie Landgoed
+        </div>
+
+    </section>
 
 </main>
 
