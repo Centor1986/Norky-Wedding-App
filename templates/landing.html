@@ -1,295 +1,452 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Norky Wedding Experience</title>
 
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
     <style>
-        * {
-            box-sizing: border-box;
-        }
 
-        body {
-            margin: 0;
-            font-family: Georgia, 'Times New Roman', serif;
-            background: #0b0b08;
-            color: #fff;
-        }
+        .hero {
 
-        .page {
-            min-height: 100vh;
-            background:
-                linear-gradient(rgba(0,0,0,0.50), rgba(0,0,0,0.82)),
-                url("/static/wedding-bg.jpg");
-            background-size: cover;
-            background-position: center;
-            padding: 32px 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .content {
-            width: 100%;
-            max-width: 760px;
             text-align: center;
+
+            padding: 30px 0 10px;
         }
 
-        .logos {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 28px;
-            margin-bottom: 35px;
-        }
+        .hero h1 {
 
-        .logo {
-            width: 135px;
-            max-height: 135px;
-            object-fit: contain;
-            filter: brightness(0) invert(1);
-            opacity: 0.95;
-        }
-
-        .deannie-logo {
-            width: 145px;
-            filter: none;
-            background: rgba(255,255,255,0.88);
-            border-radius: 50%;
-            padding: 10px;
-        }
-
-        .divider {
-            width: 1px;
-            height: 120px;
-            background: rgba(212,175,55,0.65);
-        }
-
-        .small-heading {
-            color: #d4af37;
-            letter-spacing: 6px;
-            font-size: 18px;
             margin-bottom: 12px;
-            text-transform: uppercase;
         }
 
-        h1 {
-            font-size: clamp(44px, 8vw, 78px);
-            line-height: 0.95;
-            margin: 0;
-            font-weight: 400;
-            letter-spacing: 2px;
-            text-shadow: 0 4px 30px rgba(0,0,0,0.8);
+        .hero-subtitle {
+
+            max-width: 760px;
+
+            margin: auto;
+
+            line-height: 1.8;
+
+            opacity: 0.88;
+
+            font-size: 15px;
         }
 
-        .script {
-            font-family: 'Brush Script MT', cursive;
-            color: #d4af37;
-            font-size: clamp(48px, 9vw, 88px);
-            margin-top: -4px;
-            margin-bottom: 8px;
-            font-weight: 400;
-        }
+        .navigation-grid {
 
-        .venue {
-            letter-spacing: 6px;
-            font-size: clamp(24px, 5vw, 44px);
-            margin: 10px 0 18px;
-        }
-
-        .tagline {
-            color: #f1d28a;
-            font-family: Arial, sans-serif;
-            font-size: 18px;
-            line-height: 1.5;
-            max-width: 620px;
-            margin: 0 auto 22px;
-        }
-
-        .norky-line {
-            font-family: 'Brush Script MT', cursive;
-            font-size: 34px;
-            margin-bottom: 28px;
-        }
-
-        .cards {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(260px, 1fr));
+
+            gap: 22px;
+
+            margin-top: 45px;
+        }
+
+        .nav-card {
+
+            background:
+                rgba(255,255,255,0.05);
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            border-radius: 22px;
+
+            padding: 28px;
+
+            text-decoration: none;
+
+            color: white;
+
+            transition: 0.28s;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .nav-card:hover {
+
+            transform:
+                translateY(-6px);
+
+            background:
+                rgba(255,255,255,0.08);
+        }
+
+        .nav-icon {
+
+            font-size: 42px;
+
+            margin-bottom: 18px;
+        }
+
+        .nav-card h2 {
+
+            font-size: 30px;
+
+            margin-bottom: 10px;
+        }
+
+        .nav-card p {
+
+            line-height: 1.7;
+
+            opacity: 0.82;
+
+            font-size: 14px;
+        }
+
+        .section-heading {
+
+            text-align: center;
+
+            margin-top: 60px;
+
             margin-bottom: 24px;
         }
 
-        .card {
+        .section-heading h2 {
+
+            margin-bottom: 10px;
+        }
+
+        .admin-links {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+
+            gap: 18px;
+        }
+
+        .admin-card {
+
+            background:
+                rgba(212,175,55,0.12);
+
+            border:
+                1px solid rgba(212,175,55,0.24);
+
+            border-radius: 18px;
+
+            padding: 20px;
+
             text-decoration: none;
+
             color: white;
-            border: 1px solid rgba(212,175,55,0.9);
-            border-radius: 18px;
-            padding: 28px 18px;
-            min-height: 180px;
-            background: rgba(16, 24, 13, 0.78);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 18px 45px rgba(0,0,0,0.45);
+
+            transition: 0.25s;
         }
 
-        .card.reception {
-            background: rgba(168, 121, 43, 0.82);
+        .admin-card:hover {
+
+            transform:
+                translateY(-4px);
+
+            background:
+                rgba(212,175,55,0.18);
         }
 
-        .icon {
-            font-size: 36px;
-            margin-bottom: 12px;
-        }
+        .footer-note {
 
-        .card-title {
-            font-size: 31px;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-        }
+            text-align: center;
 
-        .card-text {
-            font-family: Arial, sans-serif;
-            color: #f5d98c;
-            line-height: 1.35;
-            font-size: 16px;
-        }
+            margin-top: 60px;
 
-        .reception .card-text {
-            color: #171707;
-            font-weight: bold;
-        }
+            opacity: 0.6;
 
-        .social {
-            border: 1px solid rgba(212,175,55,0.85);
-            border-radius: 18px;
-            background: rgba(16, 24, 13, 0.82);
-            padding: 22px;
-            font-family: Arial, sans-serif;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.45);
-        }
-
-        .social h3 {
-            color: #d4af37;
-            letter-spacing: 5px;
-            margin: 0 0 8px;
-            font-weight: 400;
-        }
-
-        .social p {
-            margin: 0 0 16px;
-            color: #fff;
-        }
-
-        .social-links a {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 8px;
-            width: 48px;
-            height: 48px;
-            border: 1px solid #d4af37;
-            border-radius: 50%;
-            color: #d4af37;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .footer {
-            margin-top: 22px;
-            color: #222;
-            background: rgba(255,255,255,0.88);
-            padding: 14px;
-            border-radius: 0 0 16px 16px;
-            letter-spacing: 4px;
             font-size: 13px;
-            font-family: Arial, sans-serif;
+
+            line-height: 1.8;
         }
 
-        @media (max-width: 650px) {
-            .logos {
-                gap: 12px;
-                margin-bottom: 26px;
-            }
-
-            .logo {
-                width: 105px;
-            }
-
-            .deannie-logo {
-                width: 110px;
-            }
-
-            .divider {
-                height: 90px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-
-            .page {
-                padding: 24px 14px;
-                align-items: flex-start;
-            }
-        }
     </style>
+
 </head>
+
 <body>
 
-    <main class="page">
-        <section class="content">
+<main class="page">
 
-            <div class="logos">
-                <img src="/static/norky-logo.png" class="logo" alt="Norky Logo">
-                <div class="divider"></div>
-                <img src="/static/deannie-logo.png" class="logo deannie-logo" alt="Deannie Landgoed Logo">
+    <div class="container">
+
+        <div class="glass-card">
+
+            <!-- LOGOS -->
+
+            <div class="top-logos">
+
+                <img
+                    src="/static/norky-logo.png"
+                    class="logo-norky"
+                >
+
+                <div class="logo-line"></div>
+
+                <img
+                    src="/static/deannie-logo.png"
+                    class="logo-deannie"
+                >
+
             </div>
 
-            <div class="small-heading">Welcome to</div>
+            <!-- HERO -->
 
-            <h1>Ashley & Matthew’s</h1>
-            <div class="script">Wedding</div>
+            <section class="hero">
 
-            <div class="small-heading">at</div>
-            <div class="venue">DEANNIE LANDGOED</div>
+                <h1>
+                    {{ settings["couple_names"] }}
+                </h1>
 
-            <p class="tagline">
-                A rustic-elegant Stellenbosch estate where unforgettable memories are made.
-            </p>
+                <p class="hero-subtitle">
 
-            <div class="norky-line">Music & Atmosphere by Norky</div>
+                    {{ settings["welcome_message"] }}
 
-            <div class="cards">
-                <a href="/predrinks" class="card">
-                    <div class="icon">🥂</div>
-                    <div class="card-title">PRE-DRINKS</div>
-                    <div class="card-text">Free-for-all requests<br>via Spotify</div>
-                </a>
+                </p>
 
-                <a href="/reception" class="card reception">
-                    <div class="icon">💃</div>
-                    <div class="card-title">RECEPTION</div>
-                    <div class="card-text">Curated requests<br>DJ approved</div>
-                </a>
-            </div>
+            </section>
 
-            <div class="social">
-                <h3>LIKE & FOLLOW NORKY</h3>
-                <p>Stay up to date with our latest weddings, videos and exclusive content.</p>
+            <!-- GUEST NAVIGATION -->
 
-                <div class="social-links">
-                    <a href="#">f</a>
-                    <a href="#">ig</a>
-                    <a href="#">tt</a>
+            <section>
+
+                <div class="navigation-grid">
+
+                    <!-- PRE-DRINKS -->
+
+                    <a
+                        href="/predrinks"
+                        class="nav-card"
+                    >
+
+                        <div class="nav-icon">
+                            🍸
+                        </div>
+
+                        <h2>
+                            Pre-Drinks Playlist
+                        </h2>
+
+                        <p>
+
+                            Search Spotify, request songs,
+                            vote on tracks and help build
+                            the wedding pre-drinks atmosphere.
+
+                        </p>
+
+                    </a>
+
+                    <!-- RECEPTION -->
+
+                    <a
+                        href="/reception"
+                        class="nav-card"
+                    >
+
+                        <div class="nav-icon">
+                            🎶
+                        </div>
+
+                        <h2>
+                            Reception Requests
+                        </h2>
+
+                        <p>
+
+                            Guests can send live song requests
+                            directly to the DJ during the reception.
+
+                        </p>
+
+                    </a>
+
+                    <!-- COUPLE -->
+
+                    <a
+                        href="/couple"
+                        class="nav-card"
+                    >
+
+                        <div class="nav-icon">
+                            💍
+                        </div>
+
+                        <h2>
+                            Couple Music Portal
+                        </h2>
+
+                        <p>
+
+                            Ceremony songs, reception formalities,
+                            must-play songs, vibe preferences
+                            and wedding music planning.
+
+                        </p>
+
+                    </a>
+
+                    <!-- QR -->
+
+                    <a
+                        href="/qr"
+                        class="nav-card"
+                    >
+
+                        <div class="nav-icon">
+                            📱
+                        </div>
+
+                        <h2>
+                            Wedding QR Access
+                        </h2>
+
+                        <p>
+
+                            Open the mobile QR poster
+                            guests can scan at the venue.
+
+                        </p>
+
+                    </a>
+
                 </div>
+
+            </section>
+
+            <!-- ADMIN -->
+
+            <section class="section-heading">
+
+                <h2>
+                    DJ & Admin Controls
+                </h2>
+
+                <p class="subtitle">
+
+                    Private access for wedding preparation,
+                    downloads and request management.
+
+                </p>
+
+            </section>
+
+            <section class="admin-links">
+
+                <a
+                    href="/admin"
+                    class="admin-card"
+                >
+
+                    <strong>
+                        DJ Dashboard
+                    </strong>
+
+                    <br><br>
+
+                    Manage live requests,
+                    approvals and reception flow.
+
+                </a>
+
+                <a
+                    href="/admin/formalities"
+                    class="admin-card"
+                >
+
+                    <strong>
+                        Formalities Prep
+                    </strong>
+
+                    <br><br>
+
+                    Track downloaded songs,
+                    cue preparation and wedding workflow.
+
+                </a>
+
+                <a
+                    href="/export-formalities-pdf"
+                    class="admin-card"
+                >
+
+                    <strong>
+                        Export PDF
+                    </strong>
+
+                    <br><br>
+
+                    Generate printable wedding prep sheets
+                    and backup documentation.
+
+                </a>
+
+                <a
+                    href="/settings"
+                    class="admin-card"
+                >
+
+                    <strong>
+                        Wedding Settings
+                    </strong>
+
+                    <br><br>
+
+                    Edit wedding names,
+                    dates, links and branding.
+
+                </a>
+
+                <a
+                    href="/admin-login"
+                    class="admin-card"
+                >
+
+                    <strong>
+                        Admin Login
+                    </strong>
+
+                    <br><br>
+
+                    Secure access
+                    to admin-only features.
+
+                </a>
+
+            </section>
+
+            <!-- FOOTER -->
+
+            <div class="footer-note">
+
+                Norky Wedding Media & Mobile DJ
+                <br>
+
+                Designed for elegant,
+                interactive wedding experiences.
+
             </div>
 
-            <div class="footer">
-                ♥ THANK YOU FOR CELEBRATING WITH US ♥
-            </div>
+        </div>
 
-        </section>
-    </main>
+    </div>
+
+</main>
 
 </body>
 </html>
