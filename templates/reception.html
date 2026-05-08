@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reception Requests</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<main class="page">
+    <div class="container">
+        <div class="glass-card">
+
+            <div class="top-logos">
+                <img src="/static/norky-logo.png" class="logo-norky" alt="Norky Logo">
+                <div class="logo-line"></div>
+                <img src="/static/deannie-logo.png" class="logo-deannie" alt="Deannie Landgoed Logo">
+            </div>
+
+            <h1>Reception Requests</h1>
+
+            <p class="subtitle">
+                Send your song request to the DJ. Reception requests are curated to protect the dancefloor flow.
+            </p>
+
+            <div class="mode-note">
+                💃 DJ-curated request mode.<br>
+                Your request will be reviewed before it is played.
+            </div>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="mode-note">
+            {{ messages[0] }}
+        </div>
+    {% endif %}
+{% endwith %}
+            <form method="POST" class="form-box">
+                <div>
+                    <label>Your name</label>
+                    <input type="text" name="guest_name" placeholder="Example: Kyle" required>
+                </div>
+
+                <div>
+                    <label>Song title</label>
+                    <input type="text" name="song_title" placeholder="Example: September" required>
+                </div>
+
+                <div>
+                    <label>Artist</label>
+                    <input type="text" name="artist_name" placeholder="Example: Earth, Wind & Fire" required>
+                </div>
+
+                <button type="submit">Send Request to DJ</button>
+            </form>
+
+            <a href="/" class="back-link">← Back to Wedding Home</a>
+
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

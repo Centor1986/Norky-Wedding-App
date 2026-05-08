@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding QR Poster</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+
+    <style>
+
+        body {
+            background: #e8e1d6;
+            padding: 40px 0;
+        }
+
+        .poster-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .a5-poster {
+            width: 148mm;
+            min-height: 210mm;
+            background: white;
+            color: #2d2a26;
+            border-radius: 12px;
+            padding: 22mm 14mm;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poster-border {
+            position: absolute;
+            inset: 14px;
+            border: 1px solid rgba(130,105,74,0.35);
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .poster-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .poster-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .poster-logo-norky {
+            width: 90px;
+            filter: brightness(0);
+        }
+
+        .poster-logo-deannie {
+            width: 92px;
+            border-radius: 50%;
+        }
+
+        .poster-line {
+            width: 1px;
+            height: 70px;
+            background: rgba(130,105,74,0.45);
+        }
+
+        .poster-title {
+            text-align: center;
+            font-family: Georgia, serif;
+            font-size: 42px;
+            font-weight: 400;
+            margin-bottom: 10px;
+            color: #5e4732;
+        }
+
+        .poster-subtitle {
+            text-align: center;
+            font-size: 16px;
+            line-height: 1.7;
+            color: #7a6855;
+            margin-bottom: 34px;
+        }
+
+        .qr-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 34px 0;
+        }
+
+        .qr-box {
+            background: white;
+            padding: 18px;
+            border-radius: 18px;
+            border: 1px solid rgba(130,105,74,0.22);
+        }
+
+        .qr-box img {
+            width: 290px;
+            max-width: 100%;
+            display: block;
+        }
+
+        .instructions {
+            text-align: center;
+            color: #6f5c4a;
+            line-height: 2;
+            margin-top: 18px;
+            font-size: 16px;
+        }
+
+        .footer {
+            margin-top: 42px;
+            text-align: center;
+            color: #8a7966;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .print-controls {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .print-btn {
+            background: #7c644d;
+            color: white;
+            border: none;
+            padding: 16px 34px;
+            border-radius: 14px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .print-btn:hover {
+            background: #5f4c3b;
+        }
+
+        @page {
+            size: A5 portrait;
+            margin: 0;
+        }
+
+        @media print {
+
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .print-controls {
+                display: none;
+            }
+
+            .a5-poster {
+                width: 148mm;
+                min-height: 210mm;
+                box-shadow: none;
+                border-radius: 0;
+                margin: 0;
+            }
+
+            .poster-border {
+                inset: 10px;
+            }
+
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="poster-wrapper">
+
+    <div class="a5-poster">
+
+        <div class="poster-border"></div>
+
+        <div class="poster-content">
+
+            <div class="poster-logos">
+
+                <img
+                    src="/static/norky-logo.png"
+                    class="poster-logo-norky"
+                    alt="Norky Logo"
+                >
+
+                <div class="poster-line"></div>
+
+                <img
+                    src="/static/deannie-logo.png"
+                    class="poster-logo-deannie"
+                    alt="Deannie Landgoed Logo"
+                >
+
+            </div>
+
+            <div class="poster-title">
+                Ashley & Matthew
+            </div>
+
+            <div class="poster-subtitle">
+                Welcome to our wedding celebration.
+                <br>
+                Scan below to request songs,
+                vote for music,
+                and join the vibe.
+            </div>
+
+            <div class="qr-wrapper">
+
+                <div class="qr-box">
+
+                    <img
+                        src="{{ qr_image }}"
+                        alt="Wedding QR Code"
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="instructions">
+                🎶 Request Songs
+                <br>
+                🔥 Vote For Tracks
+                <br>
+                🎧 View Live Playback
+            </div>
+
+            <div class="footer">
+                Powered by Norky Wedding Media & Mobile DJ
+                <br>
+                In collaboration with Deannie Landgoed
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="print-controls">
+
+    <button
+        class="print-btn"
+        onclick="window.print()"
+    >
+        Download / Print Poster
+    </button>
+
+</div>
+
+</body>
+</html>

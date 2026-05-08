@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJ Preparation Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+
+    <style>
+
+        .prep-section {
+            margin-top: 50px;
+        }
+
+        .prep-grid {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .prep-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .prep-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .prep-meta {
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .youtube-btn {
+            display: inline-block;
+            margin-top: 12px;
+            background: #d4af37;
+            color: black;
+            padding: 10px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .youtube-btn:hover {
+            opacity: 0.9;
+        }
+
+        .status-row {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .status-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            margin-top: 10px;
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .pending {
+            border-left: 4px solid #c0392b;
+        }
+
+        .downloaded {
+            border-left: 4px solid #f39c12;
+        }
+
+        .checked {
+            border-left: 4px solid #3498db;
+        }
+
+        .ready {
+            border-left: 4px solid #2ecc71;
+        }
+
+        .section-heading {
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .section-sub {
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<main class="page">
+
+    <div class="container">
+
+        <div class="glass-card">
+
+            <div class="top-logos">
+                <img src="/static/norky-logo.png" class="logo-norky">
+                <div class="logo-line"></div>
+                <img src="/static/deannie-logo.png" class="logo-deannie">
+            </div>
+
+            <h1>{{ settings["couple_names"] }}</h1>
+
+            <p class="subtitle">
+                DJ Preparation Dashboard
+            </p>
+
+            <!-- CEREMONY -->
+
+            <div class="prep-section">
+
+                <div class="section-heading">
+                    Ceremony Music
+                </div>
+
+                <div class="section-sub">
+                    Ceremony entrances and key moments.
+                </div>
+
+                <div class="prep-grid">
+
+                    {% for item in ceremony_formalities %}
+
+                        <div
+                            class="prep-card
+                            {% if item['prep_status'] == 'Pending Download' %}pending{% endif %}
+                            {% if item['prep_status'] == 'Downloaded' %}downloaded{% endif %}
+                            {% if item['prep_status'] == 'Checked' %}checked{% endif %}
+                            {% if item['prep_status'] == 'Ready' %}ready{% endif %}"
+                        >
+
+                            <div class="prep-title">
+                                {{ item["category"] }}
+                            </div>
+
+                            {% if item["not_applicable"] %}
+
+                                <div class="mode-note">
+                                    Not Applicable
+                                </div>
+
+                            {% else %}
+
+                                <div class="prep-meta">
+                                    <strong>Song:</strong>
+                                    {{ item["song_title"] }}
+                                </div>
+
+                                <div class="prep-meta">
+                                    <strong>Artist:</strong>
+                                    {{ item["artist_name"] }}
+                                </div>
+
+                                {% if item["notes"] %}
+                                    <div class="prep-meta">
+                                        <strong>Notes:</strong>
+                                        {{ item["notes"] }}
+                                    </div>
+                                {% endif %}
+
+                                {% if item["youtube_link"] %}
+                                    <a
+                                        href="{{ item['youtube_link'] }}"
+                                        target="_blank"
+                                        class="youtube-btn"
+                                    >
+                                        Open YouTube Reference
+                                    </a>
+                                {% endif %}
+
+                                <div class="status-row">
+
+                                    <strong>Preparation Status</strong>
+
+                                    <select
+                                        class="status-select"
+                                        onchange="updatePrepStatus(
+                                            'formalities',
+                                            '{{ item['id'] }}',
+                                            this.value
+                                        )"
+                                    >
+
+                                        <option
+                                            value="Pending Download"
+                                            {% if item["prep_status"] == "Pending Download" %}selected{% endif %}
+                                        >
+                                            Pending Download
+                                        </option>
+
+                                        <option
+                                            value="Downloaded"
+                                            {% if item["prep_status"] == "Downloaded" %}selected{% endif %}
+                                        >
+                                            Downloaded
+                                        </option>
+
+                                        <option
+                                            value="Checked"
+                                            {% if item["prep_status"] == "Checked" %}selected{% endif %}
+                                        >
+                                            Checked
+                                        </option>
+
+                                        <option
+                                            value="Ready"
+                                            {% if item["prep_status"] == "Ready" %}selected{% endif %}
+                                        >
+                                            Ready
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            <!-- EXTRA CEREMONY -->
+
+            <div class="prep-section">
+
+                <div class="section-heading">
+                    Additional Ceremony Songs
+                </div>
+
+                <div class="prep-grid">
+
+                    {% for song in ceremony_extra_songs %}
+
+                        <div
+                            class="prep-card
+                            {% if song['prep_status'] == 'Pending Download' %}pending{% endif %}
+                            {% if song['prep_status'] == 'Downloaded' %}downloaded{% endif %}
+                            {% if song['prep_status'] == 'Checked' %}checked{% endif %}
+                            {% if song['prep_status'] == 'Ready' %}ready{% endif %}"
+                        >
+
+                            <div class="prep-title">
+                                {{ song["song_title"] }}
+                            </div>
+
+                            <div class="prep-meta">
+                                {{ song["artist_name"] }}
+                            </div>
+
+                            {% if song["notes"] %}
+                                <div class="prep-meta">
+                                    {{ song["notes"] }}
+                                </div>
+                            {% endif %}
+
+                            {% if song["youtube_link"] %}
+                                <a
+                                    href="{{ song['youtube_link'] }}"
+                                    target="_blank"
+                                    class="youtube-btn"
+                                >
+                                    Open YouTube Reference
+                                </a>
+                            {% endif %}
+
+                            <div class="status-row">
+
+                                <strong>Preparation Status</strong>
+
+                                <select
+                                    class="status-select"
+                                    onchange="updatePrepStatus(
+                                        'ceremony_extra_songs',
+                                        '{{ song['id'] }}',
+                                        this.value
+                                    )"
+                                >
+
+                                    <option
+                                        value="Pending Download"
+                                        {% if song["prep_status"] == "Pending Download" %}selected{% endif %}
+                                    >
+                                        Pending Download
+                                    </option>
+
+                                    <option
+                                        value="Downloaded"
+                                        {% if song["prep_status"] == "Downloaded" %}selected{% endif %}
+                                    >
+                                        Downloaded
+                                    </option>
+
+                                    <option
+                                        value="Checked"
+                                        {% if song["prep_status"] == "Checked" %}selected{% endif %}
+                                    >
+                                        Checked
+                                    </option>
+
+                                    <option
+                                        value="Ready"
+                                        {% if song["prep_status"] == "Ready" %}selected{% endif %}
+                                    >
+                                        Ready
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<script>
+
+async function updatePrepStatus(table, id, status) {
+
+    await fetch("/update-prep-status", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            table: table,
+            id: id,
+            status: status
+        })
+
+    });
+
+    location.reload();
+
+}
+
+</script>
+
+</body>
+</html>

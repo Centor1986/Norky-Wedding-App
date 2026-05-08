@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Couple Music Portal</title>
+    <link rel="stylesheet" href="/static/style.css">
+
+    <style>
+
+        .lock-banner {
+            background: rgba(192, 57, 43, 0.18);
+            border: 1px solid rgba(192, 57, 43, 0.4);
+            padding: 18px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .youtube-results {
+            margin-top: 20px;
+            display: grid;
+            gap: 14px;
+        }
+
+        .youtube-card {
+            display: flex;
+            gap: 14px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 14px;
+            padding: 12px;
+            align-items: center;
+        }
+
+        .youtube-card img {
+            width: 120px;
+            border-radius: 10px;
+        }
+
+        .youtube-info {
+            flex: 1;
+        }
+
+        .youtube-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .youtube-channel {
+            opacity: 0.7;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .youtube-select {
+            background: #d4af37;
+            color: black;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .selected-video {
+            margin-top: 14px;
+            background: rgba(212,175,55,0.12);
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .collapse-box {
+            margin-top: 30px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .collapse-header {
+            padding: 18px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            background: rgba(255,255,255,0.06);
+        }
+
+        .collapse-content {
+            display: none;
+            padding: 20px;
+        }
+
+        .extra-song-card {
+            background: rgba(255,255,255,0.04);
+            padding: 18px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<main class="page">
+
+    <div class="container">
+
+        <div class="glass-card">
+
+            <div class="top-logos">
+                <img src="/static/norky-logo.png" class="logo-norky">
+                <div class="logo-line"></div>
+                <img src="/static/deannie-logo.png" class="logo-deannie">
+            </div>
+
+            <h1>{{ settings["couple_names"] }}</h1>
+
+            <p class="subtitle">
+                Ceremony & Reception Music Planning
+            </p>
+
+            {% if portal_locked %}
+
+                <div class="lock-banner">
+
+                    <strong>Couple Portal Locked</strong>
+
+                    <br><br>
+
+                    Music planning changes are now locked because the wedding is within 1 day.
+
+                    <br><br>
+
+                    Please contact Norky directly for urgent changes.
+
+                </div>
+
+            {% endif %}
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="mode-note">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" class="form-box">
+
+                <!-- CEREMONY -->
+
+                <h2>CEREMONY MUSIC</h2>
+
+                {% for item in ceremony_formalities %}
+
+                    <div class="request-card">
+
+                        <h2>{{ item["category"] }}</h2>
+
+                        <label>
+                            <input
+                                type="checkbox"
+                                name="not_applicable_{{ item['id'] }}"
+                                {% if item["not_applicable"] %}checked{% endif %}
+                                {% if portal_locked %}disabled{% endif %}
+                            >
+                            Not Applicable
+                        </label>
+
+                        <br><br>
+
+                        <label>Song Title</label>
+
+                        <input
+                            type="text"
+                            id="song_title_{{ item['id'] }}"
+                            name="song_title_{{ item['id'] }}"
+                            value="{{ item['song_title'] }}"
+                            placeholder="Song title"
+                            {% if portal_locked %}disabled{% endif %}
+                        >
+
+                        <label>Artist</label>
+
+                        <input
+                            type="text"
+                            id="artist_name_{{ item['id'] }}"
+                            name="artist_name_{{ item['id'] }}"
+                            value="{{ item['artist_name'] }}"
+                            placeholder="Artist name"
+                            {% if portal_locked %}disabled{% endif %}
+                        >
+
+                        <input
+                            type="hidden"
+                            id="youtube_link_{{ item['id'] }}"
+                            name="youtube_link_{{ item['id'] }}"
+                            value="{{ item['youtube_link'] }}"
+                        >
+
+                        {% if not portal_locked %}
+
+                            <button
+                                type="button"
+                                class="btn"
+                                onclick="searchYouTube('{{ item['id'] }}')"
+                            >
+                                Search YouTube Options
+                            </button>
+
+                        {% endif %}
+
+                        <div
+                            id="youtube_results_{{ item['id'] }}"
+                            class="youtube-results"
+                        ></div>
+
+                        <div
+                            id="selected_video_{{ item['id'] }}"
+                            class="selected-video"
+                            {% if not item["youtube_link"] %}style="display:none;"{% endif %}
+                        >
+
+                            <strong>Selected Version</strong>
+
+                            <br><br>
+
+                            <a
+                                id="selected_video_link_{{ item['id'] }}"
+                                href="{{ item['youtube_link'] }}"
+                                target="_blank"
+                                style="color:#f1d28a;"
+                            >
+                                Open Selected YouTube Version
+                            </a>
+
+                        </div>
+
+                        <label>Notes</label>
+
+                        <textarea
+                            name="notes_{{ item['id'] }}"
+                            rows="3"
+                            placeholder="Version, timing, fade points, etc."
+                            {% if portal_locked %}disabled{% endif %}
+                        >{{ item['notes'] }}</textarea>
+
+                    </div>
+
+                {% endfor %}
+
+                <!-- EXTRA CEREMONY SONGS -->
+
+                <div class="collapse-box">
+
+                    <div
+                        class="collapse-header"
+                        onclick="toggleCollapse()"
+                    >
+                        Additional Ceremony Songs & Instructions
+                    </div>
+
+                    <div
+                        class="collapse-content"
+                        id="collapseContent"
+                    >
+
+                        <p class="subtitle">
+                            Worship songs, cultural moments,
+                            special entrances or additional instructions.
+                        </p>
+
+                        {% if not portal_locked %}
+
+                            <div id="extraSongsContainer">
+
+                                <div class="extra-song-card">
+
+                                    <label>Song Title</label>
+
+                                    <input
+                                        type="text"
+                                        name="extra_song_title[]"
+                                        placeholder="Song title"
+                                    >
+
+                                    <label>Artist</label>
+
+                                    <input
+                                        type="text"
+                                        name="extra_artist_name[]"
+                                        placeholder="Artist name"
+                                    >
+
+                                    <input
+                                        type="hidden"
+                                        name="extra_youtube_link[]"
+                                        value=""
+                                    >
+
+                                    <label>Notes / Instructions</label>
+
+                                    <textarea
+                                        name="extra_notes[]"
+                                        rows="3"
+                                        placeholder="Describe when this song should play or any special instructions."
+                                    ></textarea>
+
+                                </div>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn"
+                                onclick="addExtraCeremonySong()"
+                            >
+                                + Add Another Ceremony Song
+                            </button>
+
+                        {% endif %}
+
+                        <br><br>
+
+                        {% for song in ceremony_extra_songs %}
+
+                            <div class="extra-song-card">
+
+                                <strong>
+                                    {{ song["song_title"] }}
+                                </strong>
+
+                                <br>
+
+                                {{ song["artist_name"] }}
+
+                                {% if song["youtube_link"] %}
+
+                                    <br><br>
+
+                                    <a
+                                        href="{{ song['youtube_link'] }}"
+                                        target="_blank"
+                                        style="color:#f1d28a;"
+                                    >
+                                        Open YouTube Reference
+                                    </a>
+
+                                {% endif %}
+
+                                {% if song["notes"] %}
+
+                                    <br><br>
+
+                                    {{ song["notes"] }}
+
+                                {% endif %}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                <br><br>
+
+                {% if not portal_locked %}
+
+                    <button type="submit">
+                        Save Wedding Music Details
+                    </button>
+
+                {% endif %}
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+
+<script>
+
+function toggleCollapse() {
+
+    const content =
+        document.getElementById("collapseContent");
+
+    if (
+        content.style.display === "block"
+    ) {
+
+        content.style.display = "none";
+
+    } else {
+
+        content.style.display = "block";
+
+    }
+
+}
+
+async function searchYouTube(id) {
+
+    const title =
+        document.getElementById(`song_title_${id}`).value;
+
+    const artist =
+        document.getElementById(`artist_name_${id}`).value;
+
+    const query =
+        `${title} ${artist}`;
+
+    const resultsContainer =
+        document.getElementById(`youtube_results_${id}`);
+
+    resultsContainer.innerHTML =
+        "<p>Searching YouTube...</p>";
+
+    const response =
+        await fetch(
+            `/youtube-search-api?q=${encodeURIComponent(query)}`
+        );
+
+    const results =
+        await response.json();
+
+    resultsContainer.innerHTML = "";
+
+    if (!results.length) {
+
+        resultsContainer.innerHTML =
+            "<p>No results found.</p>";
+
+        return;
+    }
+
+    results.forEach(video => {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "youtube-card";
+
+        card.innerHTML = `
+            <img src="${video.thumbnail}">
+
+            <div class="youtube-info">
+
+                <div class="youtube-title">
+                    ${video.title}
+                </div>
+
+                <div class="youtube-channel">
+                    ${video.channel}
+                </div>
+
+                <button
+                    type="button"
+                    class="youtube-select"
+                    onclick="selectVideo('${id}', '${video.youtube_link}')"
+                >
+                    Select This Version
+                </button>
+
+            </div>
+        `;
+
+        resultsContainer.appendChild(card);
+
+    });
+
+}
+
+function selectVideo(id, link) {
+
+    const hiddenField =
+        document.getElementById(`youtube_link_${id}`);
+
+    hiddenField.value = link;
+
+    const selectedBox =
+        document.getElementById(`selected_video_${id}`);
+
+    const selectedLink =
+        document.getElementById(`selected_video_link_${id}`);
+
+    selectedLink.href = link;
+
+    selectedBox.style.display = "block";
+
+    document.getElementById(
+        `youtube_results_${id}`
+    ).innerHTML = "";
+
+}
+
+function addExtraCeremonySong() {
+
+    const container =
+        document.getElementById(
+            "extraSongsContainer"
+        );
+
+    const html = `
+        <div class="extra-song-card">
+
+            <label>Song Title</label>
+
+            <input
+                type="text"
+                name="extra_song_title[]"
+                placeholder="Song title"
+            >
+
+            <label>Artist</label>
+
+            <input
+                type="text"
+                name="extra_artist_name[]"
+                placeholder="Artist name"
+            >
+
+            <input
+                type="hidden"
+                name="extra_youtube_link[]"
+                value=""
+            >
+
+            <label>Notes / Instructions</label>
+
+            <textarea
+                name="extra_notes[]"
+                rows="3"
+                placeholder="Describe when this song should play or any special instructions."
+            ></textarea>
+
+        </div>
+    `;
+
+    container.insertAdjacentHTML(
+        "beforeend",
+        html
+    );
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+.env
+.spotifycache
+venv/
+__pycache__/
+*.pyc
+norky_wedding.db

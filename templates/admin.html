@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJ Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<main class="page">
+    <div class="container">
+        <div class="glass-card">
+
+            <div class="top-logos">
+                <img src="/static/norky-logo.png" class="logo-norky" alt="Norky Logo">
+                <div class="logo-line"></div>
+                <img src="/static/deannie-logo.png" class="logo-deannie" alt="Deannie Landgoed Logo">
+            </div>
+
+            <h1>DJ Admin Dashboard</h1>
+
+            <p class="subtitle">
+                Manage live guest interaction, pre-drinks history and reception requests.
+            </p>
+
+            <section class="admin-section">
+                <h2>🍸 Pre-drinks Requests</h2>
+
+                {% if predrinks_requests %}
+                    {% for song in predrinks_requests %}
+                        <div class="request-card">
+                            <div class="request-title">
+                                {{ song["song_title"] }} — {{ song["artist_name"] }}
+                            </div>
+
+                            <div class="request-meta">
+                                Requested by {{ song["guest_name"] }}<br>
+                                {{ song["requested_at"] }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty">No pre-drinks requests yet.</div>
+                {% endif %}
+            </section>
+
+            <section class="admin-section">
+                <h2>💃 Reception Requests</h2>
+
+                {% if reception_requests %}
+                    {% for song in reception_requests %}
+                        <div class="request-card">
+                            <div class="request-title">
+                                {{ song["song_title"] }} — {{ song["artist_name"] }}
+                            </div>
+
+                            <div class="request-meta">
+                                Requested by {{ song["guest_name"] }}<br>
+                                {{ song["requested_at"] }}
+                            </div>
+
+                            <div class="status">
+                                {{ song["status"] }}
+                            </div>
+
+                            <div class="action-row">
+                                <a href="/approve/{{ song['id'] }}" class="approve">Approve</a>
+                                <a href="/reject/{{ song['id'] }}" class="reject">Reject</a>
+                                <a href="/played/{{ song['id'] }}" class="played">Played</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty">No reception requests yet.</div>
+                {% endif %}
+            </section>
+
+            <a href="/" class="back-link">← Back to Wedding Home</a>
+
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

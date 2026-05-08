@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-drinks Requests</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<main class="page">
+    <div class="container">
+        <div class="glass-card">
+
+            <div class="top-logos">
+                <img src="/static/norky-logo.png" class="logo-norky" alt="Norky Logo">
+                <div class="logo-line"></div>
+                <img src="/static/deannie-logo.png" class="logo-deannie" alt="Deannie Landgoed Logo">
+            </div>
+
+            <h1>Pre-drinks Requests</h1>
+
+            <p class="subtitle">
+                Search Spotify, choose a song, and add it directly to the Pre-drinks playlist.
+            </p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="mode-note">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <a href="/connect-spotify" class="btn spotify-connect-btn">
+                Connect Spotify
+            </a>
+
+            {% if spotify_connected %}
+                <div class="spotify-connected">✓ Spotify Connected</div>
+            {% endif %}
+
+            <div class="spotify-results">
+                <h2>🎶 Now Playing</h2>
+
+                <div class="spotify-card" id="nowPlayingCard">
+                    {% if now_playing %}
+                        {% if now_playing["album_art"] %}
+                            <img src="{{ now_playing['album_art'] }}" class="album-art" id="nowPlayingArt" alt="Album artwork">
+                        {% endif %}
+
+                        <div class="spotify-info">
+                            <div class="spotify-song" id="nowPlayingTitle">{{ now_playing["song_title"] }}</div>
+                            <div class="spotify-artist" id="nowPlayingArtist">{{ now_playing["artist_name"] }}</div>
+                            <div class="spotify-album" id="nowPlayingAlbum">{{ now_playing["album_name"] }}</div>
+
+                            <div class="spotify-connected" id="nowPlayingStatus">
+                                {% if now_playing["is_playing"] %}
+                                    Live from the Pre-drinks playlist
+                                {% else %}
+                                    Spotify connected, but playback is paused
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="spotify-info">
+                            <div class="spotify-song" id="nowPlayingTitle">Nothing currently playing</div>
+                            <div class="spotify-artist" id="nowPlayingArtist">Start Spotify playback to activate live mode</div>
+                            <div class="spotify-album" id="nowPlayingAlbum"></div>
+                            <div class="spotify-connected" id="nowPlayingStatus">Waiting for Spotify</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <form method="POST" class="form-box">
+                <input type="hidden" name="search" value="1">
+
+                <div>
+                    <label>Search song or artist</label>
+                    <input type="text" name="search_query" placeholder="Example: Ed Sheeran Perfect" required>
+                </div>
+
+                <button type="submit">Search Spotify</button>
+            </form>
+
+            {% if spotify_results %}
+                <div class="spotify-results">
+                    <h2>Spotify Results</h2>
+
+                    <div class="spotify-grid">
+                        {% for track in spotify_results %}
+                            <div class="spotify-card">
+                                <img src="{{ track['album']['images'][0]['url'] }}" class="album-art" alt="Album artwork">
+
+                                <div class="spotify-info">
+                                    <div class="spotify-song">{{ track["name"] }}</div>
+                                    <div class="spotify-artist">{{ track["artists"][0]["name"] }}</div>
+                                    <div class="spotify-album">{{ track["album"]["name"] }}</div>
+
+                                    <form method="POST" class="spotify-form">
+                                        <input type="hidden" name="add_song" value="1">
+                                        <input type="hidden" name="song_title" value="{{ track['name'] }}">
+                                        <input type="hidden" name="artist_name" value="{{ track['artists'][0]['name'] }}">
+                                        <input type="hidden" name="track_uri" value="{{ track['uri'] }}">
+
+                                        <input type="text" name="guest_name" placeholder="Your name" required>
+                                        <button type="submit" class="spotify-add-btn">Add To Playlist</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if recent_activity %}
+                <div class="spotify-results">
+                    <h2>⚡ Recently Added</h2>
+
+                    <div class="spotify-grid" id="activityFeed">
+                        {% for item in recent_activity %}
+                            <div class="spotify-card">
+                                <div class="spotify-info">
+                                    <div class="spotify-song">
+                                        {{ item["guest_name"] }} {{ item["action"] }}
+                                    </div>
+
+                                    <div class="spotify-artist">
+                                        {{ item["song_title"] }}
+                                    </div>
+
+                                    <div class="spotify-album">
+                                        {{ item["artist_name"] }} · {{ item["created_at"] }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if top_requested %}
+                <div class="spotify-results">
+                    <h2>🔥 Most Requested Right Now</h2>
+
+                    <div class="spotify-grid">
+                        {% for song in top_requested %}
+                            <div class="spotify-card">
+                                <div class="spotify-info">
+                                    <div class="spotify-song">{{ song["song_title"] }}</div>
+                                    <div class="spotify-artist">{{ song["artist_name"] }}</div>
+                                    <div class="spotify-album">Requested by {{ song["guest_name"] }}</div>
+                                    <div class="spotify-connected">🔥 {{ song["votes"] }} Votes</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <a href="/" class="back-link">← Back to Wedding Home</a>
+
+        </div>
+    </div>
+</main>
+
+<script>
+async function updateNowPlaying() {
+    try {
+        const response = await fetch("/now-playing");
+        const data = await response.json();
+
+        if (!data.connected || !data.now_playing) {
+            return;
+        }
+
+        const nowPlaying = data.now_playing;
+
+        let art = document.getElementById("nowPlayingArt");
+
+        if (!art && nowPlaying.album_art) {
+            const card = document.getElementById("nowPlayingCard");
+            art = document.createElement("img");
+            art.className = "album-art";
+            art.id = "nowPlayingArt";
+            art.alt = "Album artwork";
+            card.prepend(art);
+        }
+
+        if (art) {
+            art.src = nowPlaying.album_art;
+        }
+
+        document.getElementById("nowPlayingTitle").innerText = nowPlaying.song_title;
+        document.getElementById("nowPlayingArtist").innerText = nowPlaying.artist_name;
+        document.getElementById("nowPlayingAlbum").innerText = nowPlaying.album_name;
+
+        document.getElementById("nowPlayingStatus").innerText =
+            nowPlaying.is_playing
+            ? "Live from the Pre-drinks playlist"
+            : "Playback paused";
+
+    } catch (error) {
+        console.log("Now Playing update failed.");
+    }
+}
+
+async function updateActivityFeed() {
+    try {
+        const response = await fetch("/live-activity");
+        const data = await response.json();
+
+        const feed = document.getElementById("activityFeed");
+
+        if (!feed || !data.length) {
+            return;
+        }
+
+        feed.innerHTML = "";
+
+        data.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "spotify-card";
+
+            card.innerHTML = `
+                <div class="spotify-info">
+                    <div class="spotify-song">
+                        ${item.guest_name} ${item.action}
+                    </div>
+
+                    <div class="spotify-artist">
+                        ${item.song_title}
+                    </div>
+
+                    <div class="spotify-album">
+                        ${item.artist_name} · ${item.created_at}
+                    </div>
+                </div>
+            `;
+
+            feed.appendChild(card);
+        });
+
+    } catch (error) {
+        console.log("Activity feed update failed.");
+    }
+}
+
+setInterval(updateNowPlaying, 10000);
+setInterval(updateActivityFeed, 12000);
+</script>
+
+</body>
+</html>
