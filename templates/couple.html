@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="/static/style.css">
 
     <style>
-
         .lock-banner {
             background: rgba(192, 57, 43, 0.18);
             border: 1px solid rgba(192, 57, 43, 0.4);
@@ -95,9 +94,12 @@
             margin-bottom: 20px;
         }
 
+        .section-spacer {
+            margin-top: 55px;
+        }
     </style>
-
 </head>
+
 <body>
 
 <main class="page">
@@ -119,21 +121,13 @@
             </p>
 
             {% if portal_locked %}
-
                 <div class="lock-banner">
-
                     <strong>Couple Portal Locked</strong>
-
                     <br><br>
-
                     Music planning changes are now locked because the wedding is within 1 day.
-
                     <br><br>
-
                     Please contact Norky directly for urgent changes.
-
                 </div>
-
             {% endif %}
 
             {% with messages = get_flashed_messages() %}
@@ -166,8 +160,6 @@
                             Not Applicable
                         </label>
 
-                        <br><br>
-
                         <label>Song Title</label>
 
                         <input
@@ -198,7 +190,6 @@
                         >
 
                         {% if not portal_locked %}
-
                             <button
                                 type="button"
                                 class="btn"
@@ -206,7 +197,6 @@
                             >
                                 Search YouTube Options
                             </button>
-
                         {% endif %}
 
                         <div
@@ -219,7 +209,6 @@
                             class="selected-video"
                             {% if not item["youtube_link"] %}style="display:none;"{% endif %}
                         >
-
                             <strong>Selected Version</strong>
 
                             <br><br>
@@ -232,7 +221,6 @@
                             >
                                 Open Selected YouTube Version
                             </a>
-
                         </div>
 
                         <label>Notes</label>
@@ -265,8 +253,7 @@
                     >
 
                         <p class="subtitle">
-                            Worship songs, cultural moments,
-                            special entrances or additional instructions.
+                            Worship songs, cultural moments, special entrances or additional instructions.
                         </p>
 
                         {% if not portal_locked %}
@@ -363,17 +350,307 @@
 
                 </div>
 
-                <br><br>
+                <!-- RECEPTION FORMALITIES -->
+
+                <h2 class="section-spacer">RECEPTION FORMALITIES</h2>
+
+                {% for item in reception_formalities %}
+
+                    <div class="request-card">
+
+                        <h2>{{ item["category"] }}</h2>
+
+                        <label>
+                            <input
+                                type="checkbox"
+                                name="not_applicable_{{ item['id'] }}"
+                                {% if item["not_applicable"] %}checked{% endif %}
+                                {% if portal_locked %}disabled{% endif %}
+                            >
+                            Not Applicable
+                        </label>
+
+                        <label>Song Title</label>
+
+                        <input
+                            type="text"
+                            id="song_title_{{ item['id'] }}"
+                            name="song_title_{{ item['id'] }}"
+                            value="{{ item['song_title'] }}"
+                            placeholder="Song title"
+                            {% if portal_locked %}disabled{% endif %}
+                        >
+
+                        <label>Artist</label>
+
+                        <input
+                            type="text"
+                            id="artist_name_{{ item['id'] }}"
+                            name="artist_name_{{ item['id'] }}"
+                            value="{{ item['artist_name'] }}"
+                            placeholder="Artist name"
+                            {% if portal_locked %}disabled{% endif %}
+                        >
+
+                        <input
+                            type="hidden"
+                            id="youtube_link_{{ item['id'] }}"
+                            name="youtube_link_{{ item['id'] }}"
+                            value="{{ item['youtube_link'] }}"
+                        >
+
+                        {% if not portal_locked %}
+                            <button
+                                type="button"
+                                class="btn"
+                                onclick="searchYouTube('{{ item['id'] }}')"
+                            >
+                                Search YouTube Options
+                            </button>
+                        {% endif %}
+
+                        <div
+                            id="youtube_results_{{ item['id'] }}"
+                            class="youtube-results"
+                        ></div>
+
+                        <div
+                            id="selected_video_{{ item['id'] }}"
+                            class="selected-video"
+                            {% if not item["youtube_link"] %}style="display:none;"{% endif %}
+                        >
+                            <strong>Selected Version</strong>
+
+                            <br><br>
+
+                            <a
+                                id="selected_video_link_{{ item['id'] }}"
+                                href="{{ item['youtube_link'] }}"
+                                target="_blank"
+                                style="color:#f1d28a;"
+                            >
+                                Open Selected YouTube Version
+                            </a>
+                        </div>
+
+                        <label>Notes</label>
+
+                        <textarea
+                            name="notes_{{ item['id'] }}"
+                            rows="3"
+                            placeholder="Version, timing, transitions, etc."
+                            {% if portal_locked %}disabled{% endif %}
+                        >{{ item['notes'] }}</textarea>
+
+                    </div>
+
+                {% endfor %}
+
+                <!-- RECEPTION VIBES -->
+
+                <h2 class="section-spacer">RECEPTION VIBES</h2>
+
+                <div class="request-card">
+
+                    <p class="subtitle">
+                        Help guide the overall dancefloor energy.
+                    </p>
+
+                    {% for vibe in vibe_preferences %}
+
+                        <label style="display:block; margin-bottom:14px;">
+                            <input
+                                type="checkbox"
+                                name="vibe_{{ vibe['id'] }}"
+                                {% if vibe["enabled"] %}checked{% endif %}
+                                {% if portal_locked %}disabled{% endif %}
+                            >
+                            {{ vibe["preference_name"] }}
+                        </label>
+
+                    {% endfor %}
+
+                </div>
+
+                <!-- MUST PLAY -->
+
+                <h2 class="section-spacer">MUST-PLAY SONGS</h2>
+
+                <p class="subtitle">
+                    Add as many songs as needed.
+                </p>
 
                 {% if not portal_locked %}
 
-                    <button type="submit">
-                        Save Wedding Music Details
+                    <div id="mustPlayContainer">
+
+                        <div class="request-card">
+
+                            <label>Song Title</label>
+                            <input type="text" name="must_song_title[]" placeholder="Song title">
+
+                            <label>Artist</label>
+                            <input type="text" name="must_artist_name[]" placeholder="Artist name">
+
+                            <input type="hidden" name="must_youtube_link[]" value="">
+
+                            <label>Notes</label>
+                            <textarea name="must_notes[]" rows="2" placeholder="When to play it, who it is for, etc."></textarea>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn"
+                        onclick="addMustPlaySong()"
+                    >
+                        + Add Another Must-Play Song
                     </button>
 
                 {% endif %}
 
+                {% if must_play %}
+
+                    {% for song in must_play %}
+
+                        <div class="request-card">
+
+                            <div class="request-title">
+                                {{ song["song_title"] }} — {{ song["artist_name"] }}
+                            </div>
+
+                            {% if song["youtube_link"] %}
+                                <div class="request-meta">
+                                    YouTube:
+                                    <a
+                                        href="{{ song['youtube_link'] }}"
+                                        target="_blank"
+                                        style="color:#f1d28a;"
+                                    >
+                                        Open Reference
+                                    </a>
+                                </div>
+                            {% endif %}
+
+                            <div class="request-meta">
+                                {{ song["notes"] }}
+                            </div>
+
+                            {% if not portal_locked %}
+                                <br>
+                                <a
+                                    href="/delete-must-play/{{ song['id'] }}"
+                                    class="back-link"
+                                >
+                                    Remove
+                                </a>
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+                <!-- DO NOT PLAY -->
+
+                <h2 class="section-spacer">DO-NOT-PLAY SONGS</h2>
+
+                <p class="subtitle">
+                    Songs, artists or versions to avoid.
+                </p>
+
+                {% if not portal_locked %}
+
+                    <div id="doNotPlayContainer">
+
+                        <div class="request-card">
+
+                            <label>Song Title</label>
+                            <input type="text" name="no_song_title[]" placeholder="Song title">
+
+                            <label>Artist</label>
+                            <input type="text" name="no_artist_name[]" placeholder="Artist name">
+
+                            <input type="hidden" name="no_youtube_link[]" value="">
+
+                            <label>Notes</label>
+                            <textarea name="no_notes[]" rows="2" placeholder="Reason or special instruction"></textarea>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn"
+                        onclick="addDoNotPlaySong()"
+                    >
+                        + Add Another Do-Not-Play Song
+                    </button>
+
+                {% endif %}
+
+                {% if do_not_play %}
+
+                    {% for song in do_not_play %}
+
+                        <div class="request-card">
+
+                            <div class="request-title">
+                                {{ song["song_title"] }} — {{ song["artist_name"] }}
+                            </div>
+
+                            {% if song["youtube_link"] %}
+                                <div class="request-meta">
+                                    YouTube:
+                                    <a
+                                        href="{{ song['youtube_link'] }}"
+                                        target="_blank"
+                                        style="color:#f1d28a;"
+                                    >
+                                        Open Reference
+                                    </a>
+                                </div>
+                            {% endif %}
+
+                            <div class="request-meta">
+                                {{ song["notes"] }}
+                            </div>
+
+                            {% if not portal_locked %}
+                                <br>
+                                <a
+                                    href="/delete-do-not-play/{{ song['id'] }}"
+                                    class="back-link"
+                                >
+                                    Remove
+                                </a>
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+                <br><br>
+
+                {% if not portal_locked %}
+                    <button type="submit">
+                        Save Wedding Music Details
+                    </button>
+                {% endif %}
+
             </form>
+
+            <br>
+
+            <a href="/couple-logout" class="back-link">
+                Logout of Couple Portal
+            </a>
 
         </div>
 
@@ -382,74 +659,45 @@
 </main>
 
 <script>
-
 function toggleCollapse() {
+    const content = document.getElementById("collapseContent");
 
-    const content =
-        document.getElementById("collapseContent");
-
-    if (
-        content.style.display === "block"
-    ) {
-
+    if (content.style.display === "block") {
         content.style.display = "none";
-
     } else {
-
         content.style.display = "block";
-
     }
-
 }
 
 async function searchYouTube(id) {
+    const title = document.getElementById(`song_title_${id}`).value;
+    const artist = document.getElementById(`artist_name_${id}`).value;
+    const query = `${title} ${artist}`;
+    const resultsContainer = document.getElementById(`youtube_results_${id}`);
 
-    const title =
-        document.getElementById(`song_title_${id}`).value;
+    resultsContainer.innerHTML = "<p>Searching YouTube...</p>";
 
-    const artist =
-        document.getElementById(`artist_name_${id}`).value;
+    const response = await fetch(
+        `/youtube-search-api?q=${encodeURIComponent(query)}`
+    );
 
-    const query =
-        `${title} ${artist}`;
-
-    const resultsContainer =
-        document.getElementById(`youtube_results_${id}`);
-
-    resultsContainer.innerHTML =
-        "<p>Searching YouTube...</p>";
-
-    const response =
-        await fetch(
-            `/youtube-search-api?q=${encodeURIComponent(query)}`
-        );
-
-    const results =
-        await response.json();
+    const results = await response.json();
 
     resultsContainer.innerHTML = "";
 
     if (!results.length) {
-
-        resultsContainer.innerHTML =
-            "<p>No results found.</p>";
-
+        resultsContainer.innerHTML = "<p>No results found.</p>";
         return;
     }
 
     results.forEach(video => {
-
-        const card =
-            document.createElement("div");
-
-        card.className =
-            "youtube-card";
+        const card = document.createElement("div");
+        card.className = "youtube-card";
 
         card.innerHTML = `
             <img src="${video.thumbnail}">
 
             <div class="youtube-info">
-
                 <div class="youtube-title">
                     ${video.title}
                 </div>
@@ -465,51 +713,33 @@ async function searchYouTube(id) {
                 >
                     Select This Version
                 </button>
-
             </div>
         `;
 
         resultsContainer.appendChild(card);
-
     });
-
 }
 
 function selectVideo(id, link) {
-
-    const hiddenField =
-        document.getElementById(`youtube_link_${id}`);
-
+    const hiddenField = document.getElementById(`youtube_link_${id}`);
     hiddenField.value = link;
 
-    const selectedBox =
-        document.getElementById(`selected_video_${id}`);
-
-    const selectedLink =
-        document.getElementById(`selected_video_link_${id}`);
+    const selectedBox = document.getElementById(`selected_video_${id}`);
+    const selectedLink = document.getElementById(`selected_video_link_${id}`);
 
     selectedLink.href = link;
-
     selectedBox.style.display = "block";
 
-    document.getElementById(
-        `youtube_results_${id}`
-    ).innerHTML = "";
-
+    document.getElementById(`youtube_results_${id}`).innerHTML = "";
 }
 
 function addExtraCeremonySong() {
-
-    const container =
-        document.getElementById(
-            "extraSongsContainer"
-        );
+    const container = document.getElementById("extraSongsContainer");
 
     const html = `
         <div class="extra-song-card">
 
             <label>Song Title</label>
-
             <input
                 type="text"
                 name="extra_song_title[]"
@@ -517,7 +747,6 @@ function addExtraCeremonySong() {
             >
 
             <label>Artist</label>
-
             <input
                 type="text"
                 name="extra_artist_name[]"
@@ -531,7 +760,6 @@ function addExtraCeremonySong() {
             >
 
             <label>Notes / Instructions</label>
-
             <textarea
                 name="extra_notes[]"
                 rows="3"
@@ -541,13 +769,54 @@ function addExtraCeremonySong() {
         </div>
     `;
 
-    container.insertAdjacentHTML(
-        "beforeend",
-        html
-    );
-
+    container.insertAdjacentHTML("beforeend", html);
 }
 
+function addMustPlaySong() {
+    const container = document.getElementById("mustPlayContainer");
+
+    const html = `
+        <div class="request-card">
+
+            <label>Song Title</label>
+            <input type="text" name="must_song_title[]" placeholder="Song title">
+
+            <label>Artist</label>
+            <input type="text" name="must_artist_name[]" placeholder="Artist name">
+
+            <input type="hidden" name="must_youtube_link[]" value="">
+
+            <label>Notes</label>
+            <textarea name="must_notes[]" rows="2" placeholder="When to play it, who it is for, etc."></textarea>
+
+        </div>
+    `;
+
+    container.insertAdjacentHTML("beforeend", html);
+}
+
+function addDoNotPlaySong() {
+    const container = document.getElementById("doNotPlayContainer");
+
+    const html = `
+        <div class="request-card">
+
+            <label>Song Title</label>
+            <input type="text" name="no_song_title[]" placeholder="Song title">
+
+            <label>Artist</label>
+            <input type="text" name="no_artist_name[]" placeholder="Artist name">
+
+            <input type="hidden" name="no_youtube_link[]" value="">
+
+            <label>Notes</label>
+            <textarea name="no_notes[]" rows="2" placeholder="Reason or special instruction"></textarea>
+
+        </div>
+    `;
+
+    container.insertAdjacentHTML("beforeend", html);
+}
 </script>
 
 </body>

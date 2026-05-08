@@ -5,7 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DJ Admin Dashboard</title>
     <link rel="stylesheet" href="/static/style.css">
+
+    <style>
+        .admin-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px;
+            margin: 40px 0;
+        }
+
+        .admin-action-card {
+            background: rgba(212,175,55,0.12);
+            border: 1px solid rgba(212,175,55,0.25);
+            border-radius: 18px;
+            padding: 22px;
+            text-decoration: none;
+            color: white;
+            transition: 0.25s;
+        }
+
+        .admin-action-card:hover {
+            transform: translateY(-4px);
+            background: rgba(212,175,55,0.18);
+        }
+
+        .admin-action-card strong {
+            color: #f2e4c7;
+            font-size: 18px;
+        }
+
+        .request-section {
+            margin-top: 50px;
+        }
+
+        .request-row {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+
+        .request-title {
+            font-weight: bold;
+            color: #f2e4c7;
+            margin-bottom: 8px;
+        }
+
+        .request-meta {
+            opacity: 0.82;
+            line-height: 1.6;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .mini-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 13px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            color: black;
+            background: #d4af37;
+        }
+
+        .mini-btn.secondary {
+            background: rgba(255,255,255,0.18);
+            color: white;
+        }
+
+        .mini-btn.danger {
+            background: rgba(192,57,43,0.85);
+            color: white;
+        }
+
+        .status-label {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.10);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
 </head>
+
 <body>
 
 <main class="page">
@@ -13,70 +107,160 @@
         <div class="glass-card">
 
             <div class="top-logos">
-                <img src="/static/norky-logo.png" class="logo-norky" alt="Norky Logo">
+                <img src="/static/norky-logo.png" class="logo-norky">
                 <div class="logo-line"></div>
-                <img src="/static/deannie-logo.png" class="logo-deannie" alt="Deannie Landgoed Logo">
+                <img src="/static/deannie-logo.png" class="logo-deannie">
             </div>
 
             <h1>DJ Admin Dashboard</h1>
 
             <p class="subtitle">
-                Manage live guest interaction, pre-drinks history and reception requests.
+                Manage wedding operations, guest interaction, prep workflow and live reception requests.
             </p>
 
-            <section class="admin-section">
-                <h2>🍸 Pre-drinks Requests</h2>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="mode-note">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="admin-actions">
+
+                <a href="/admin/weddings" class="admin-action-card">
+                    <strong>Wedding Management</strong>
+                    <br><br>
+                    Create weddings, protect booked dates and view upcoming bookings.
+                </a>
+
+                <a href="/admin/formalities" class="admin-action-card">
+                    <strong>Formalities Prep</strong>
+                    <br><br>
+                    View ceremony/reception music, YouTube references and prep statuses.
+                </a>
+
+                <a href="/settings" class="admin-action-card">
+                    <strong>Wedding Settings</strong>
+                    <br><br>
+                    Update couple names, wedding date, welcome text and venue details.
+                </a>
+
+                <a href="/qr" class="admin-action-card">
+                    <strong>QR Poster</strong>
+                    <br><br>
+                    Open the guest QR poster for printing and testing.
+                </a>
+
+                <a href="/export-formalities-pdf" class="admin-action-card">
+                    <strong>Export PDF</strong>
+                    <br><br>
+                    Download printable ceremony, reception and prep sheets.
+                </a>
+
+                <a href="/admin-logout" class="admin-action-card">
+                    <strong>Logout</strong>
+                    <br><br>
+                    End the admin session securely.
+                </a>
+
+            </div>
+
+            <div class="request-section">
+
+                <h2>Pre-drinks Requests</h2>
 
                 {% if predrinks_requests %}
-                    {% for song in predrinks_requests %}
-                        <div class="request-card">
+
+                    {% for request in predrinks_requests %}
+
+                        <div class="request-row">
+
                             <div class="request-title">
-                                {{ song["song_title"] }} — {{ song["artist_name"] }}
+                                {{ request["song_title"] }} — {{ request["artist_name"] }}
                             </div>
 
                             <div class="request-meta">
-                                Requested by {{ song["guest_name"] }}<br>
-                                {{ song["requested_at"] }}
+                                Requested by: {{ request["guest_name"] }}
+                                <br>
+                                Votes: {{ request["votes"] }}
+                                <br>
+                                Time: {{ request["requested_at"] }}
                             </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="empty">No pre-drinks requests yet.</div>
-                {% endif %}
-            </section>
 
-            <section class="admin-section">
-                <h2>💃 Reception Requests</h2>
+                        </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <p class="subtitle">
+                        No pre-drinks requests yet.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+            <div class="request-section">
+
+                <h2>Reception Requests</h2>
 
                 {% if reception_requests %}
-                    {% for song in reception_requests %}
-                        <div class="request-card">
+
+                    {% for request in reception_requests %}
+
+                        <div class="request-row">
+
                             <div class="request-title">
-                                {{ song["song_title"] }} — {{ song["artist_name"] }}
+                                {{ request["song_title"] }} — {{ request["artist_name"] }}
                             </div>
 
                             <div class="request-meta">
-                                Requested by {{ song["guest_name"] }}<br>
-                                {{ song["requested_at"] }}
+                                Requested by: {{ request["guest_name"] }}
+                                <br>
+                                Time: {{ request["requested_at"] }}
+                                <br>
+                                <span class="status-label">
+                                    {{ request["status"] }}
+                                </span>
                             </div>
 
-                            <div class="status">
-                                {{ song["status"] }}
+                            <div class="request-actions">
+
+                                <a href="/approve/{{ request['id'] }}" class="mini-btn">
+                                    Approve
+                                </a>
+
+                                <a href="/played/{{ request['id'] }}" class="mini-btn secondary">
+                                    Mark Played
+                                </a>
+
+                                <a href="/reject/{{ request['id'] }}" class="mini-btn danger">
+                                    Reject
+                                </a>
+
                             </div>
 
-                            <div class="action-row">
-                                <a href="/approve/{{ song['id'] }}" class="approve">Approve</a>
-                                <a href="/reject/{{ song['id'] }}" class="reject">Reject</a>
-                                <a href="/played/{{ song['id'] }}" class="played">Played</a>
-                            </div>
                         </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="empty">No reception requests yet.</div>
-                {% endif %}
-            </section>
 
-            <a href="/" class="back-link">← Back to Wedding Home</a>
+                    {% endfor %}
+
+                {% else %}
+
+                    <p class="subtitle">
+                        No reception requests yet.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+            <br>
+
+            <a href="/" class="back-link">
+                ← Back to Guest Home
+            </a>
 
         </div>
     </div>
